@@ -6,10 +6,14 @@ import shutil
 import json
 from os import path
 from bs4 import BeautifulSoup
-from luckydonaldUtils.files.basics import mkdir_p
 
+from progress_bar import copyfileobj, create_advanced_copy_progress
 from settings import DOWNLOAD_DIR, COOKIE_JAR
+from luckydonaldUtils.files.basics import mkdir_p
+from luckydonaldUtils.logger import logging
 
+logger = logging.getLogger(__name__)
+logging.add_colored_handler(level=logging.DEBUG)
 
 URL_TROVE = "https://www.humblebundle.com/monthly/trove"
 URL_DL_SIGN = "https://www.humblebundle.com/api/v1/user/download/sign"
@@ -90,9 +94,9 @@ for game in GAME_DATA:
                 auth_request=auth_request_data,
                 file=download_file_path,
                 type=download_type,
-                size=download_meta['file_size'],
-                md5=download_meta.get('md5', None),
-                sha1=download_meta.get('sha1', None),
+                size=download_meta.get('file_size', None) if download_type == 'web' else None,  # only the actual file.
+                md5=download_meta.get('md5', None) if download_type == 'web' else None,  # only the actual file.
+                sha1=download_meta.get('sha1', None) if download_type == 'web' else None,  # only the actual file.
             ))
         # end for
     # end for
@@ -103,23 +107,27 @@ for game in GAME_DATA:
 
 url_data: URLData
 for i, url_data in enumerate(DOWNLOADS):
-    print(f'Downloading {url_data.file!r} from {url_data.url!r}')
+    logger.info(f'Downloading {url_data.file!r} from {url_data.url!r}')
     # check if file already exists.
     if path.exists(url_data.file):
-        print(f'File {url_data.file!r} already exists. Checking size.')
+        logger.debug(f'File {url_data.file!r} already exists. Checking size.')
 
-        needs_download = False
-
-        # check file size
-        disk_size = path.getsize(url_data.file)
-        if disk_size != url_data.size:
-            print(f'Existing file {url_data.file!r} has wrong filesize. Disk is {disk_size}, online is {url_data.size}. Will download again.')
-            needs_download = True
-        # end if
+        needs_download = None
 
         if url_data.type != 'web':
-            print(f'Not checking md5 or sha1 for file {url_data.file!r} as it is not the main file.')
+            logger.info(
+                f'Could not checking size, md5 or sha1 for file {url_data.file!r} as it is not the main "web" file, '
+                f'but is of type {url_data.type}.'
+            )
+            needs_download = False
         else:
+            # check file size
+            disk_size = path.getsize(url_data.file)
+            if disk_size != url_data.size:
+                logger.warning(f'Existing file {url_data.file!r} has wrong filesize. Disk is {disk_size}, online is {url_data.size}.')
+                needs_download = True
+            # end if
+
             # check md5 and sha1 hash
             hash_md5 = hashlib.md5()
             hash_sha1 = hashlib.sha1()
@@ -132,23 +140,26 @@ for i, url_data in enumerate(DOWNLOADS):
             md5 = hash_md5.hexdigest()
             sha1 = hash_sha1.hexdigest()
             if url_data.md5 is None:
-                print(f'Existing file {url_data.file!r} has no md5 hashsum. Disk is {md5}. Will download again.')
-                needs_download = True
+                logger.warning(f'Existing file {url_data.file!r} has no md5 hashsum. Disk is {md5}.')
             elif md5 != url_data.md5:
-                print(f'Existing file {url_data.file!r} has wrong md5 hashsum. Disk is {md5}, online is {url_data.md5}. Will download again.')
+                logger.warning(f'Existing file {url_data.file!r} has wrong md5 hashsum. Disk is {md5}, online is {url_data.md5}.')
                 needs_download = True
             # end if
             if url_data.sha1 is None:
-                print(f'Existing file {url_data.file!r} has no sha1 hashsum. Disk is {sha1}. Will download again.')
-                needs_download = True
+                logger.warning(f'Existing file {url_data.file!r} has no sha1 hashsum. Disk is {sha1}.')
             elif sha1 != url_data.sha1:
-                print(f'Existing file {url_data.file!r} has wrong sha1 hashsum. Disk is {sha1}, online is {url_data.sha1}. Will download again.')
-                needs_download = True
+                logger.warning(f'Existing file {url_data.file!r} has wrong sha1 hashsum. Disk is {sha1}, online is {url_data.sha1}.')
+                # needs_download = True
             # end if
         # end if
-        if not needs_download:
-            print(f'Existing file {url_data.file!r} has correct metadata. Will not download again.')
+        if needs_download is None:
+            logger.success(f'Existing file {url_data.file!r} was found.')
             continue
+        elif not needs_download:
+            logger.success(f'Existing file {url_data.file!r} has correct metadata.')
+            continue
+        else:
+            logger.warning(f'Will download again.')
         # end if
     # end if
 
@@ -164,12 +175,13 @@ for i, url_data in enumerate(DOWNLOADS):
     )
     json_signature = signature.json()
     url = json_signature[DOWNLOAD_URL_TYPE_TO_SIGNATURE_TYPE_MAP[url_data.type]]
-    print(f'Downloading {url_data.file!r} from signed url {url!r}')
+    logger.info(f'Downloading {url_data.file!r} from signed url {url!r}')
     with requests.get(url, stream=True) as r:
-        print(f'Downloading {url_data.file!r} from signed url {url!r}: {r}')
+        logger.debug(f'Downloading {url_data.file!r} from signed url {url!r}: {r}')
         with open(url_data.file, 'wb') as f:
-            shutil.copyfileobj(r.raw, f)
+            copyfileobj(r.raw, f, callback=create_advanced_copy_progress(prefix="DL ", width=30), total=url_data.size)
         # end with
     # end with
+    logger.success(f'Downloaded {url_data.file!r}.')
 # end for
 
