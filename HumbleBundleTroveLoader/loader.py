@@ -30,7 +30,7 @@ with open("/tmp/trove.html", "wb") as f:
     f.write(response.content)
 # end if
 
-soup = BeautifulSoup(response.content)
+soup = BeautifulSoup(response.content, features="html.parser")
 json_script_tag_trove_data_element = soup.find('script', id='webpack-monthly-trove-data')
 json_script_tag_trove_data_string = "\n".join(json_script_tag_trove_data_element.contents)
 trove_data = json.loads(json_script_tag_trove_data_string)
