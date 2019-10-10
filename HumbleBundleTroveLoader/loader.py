@@ -211,7 +211,7 @@ for i, url_data in enumerate(DOWNLOADS):
     )
     json_signature = signature.json()
     url = json_signature[DOWNLOAD_URL_TYPE_TO_SIGNATURE_TYPE_MAP[url_data.type]]
-    file_size = int(url_data.size)
+    file_size = int(url_data.size) if isinstance(url_data.size, str) else url_data.size
     logger.info(f'{part}: Downloading {url_data.file!r} from signed url {url!r}, size reported by trove: {human_size(file_size)}')
     with requests.get(url, stream=True) as resp:
         logger.debug(f'{part}: Response: {resp}')
