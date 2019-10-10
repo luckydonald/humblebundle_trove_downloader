@@ -63,7 +63,7 @@ def build_progress_bar(percent: float, width: Union[None, int] = None, use_color
             blocks_widget.append(COLOR_YELLOW)
         elif percent > 90.:
             blocks_widget.append(COLOR_CYAN)
-        elif percent == 100.:
+        elif percent > 99.:
             blocks_widget.append(COLOR_GREEN)
         else:
             blocks_widget.append(COLOR_RED)
