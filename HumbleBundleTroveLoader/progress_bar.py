@@ -122,7 +122,7 @@ def build_activity_bar(integer: int, width: int, use_color: bool) -> str:
 def prepare_width(width):
     # if width unset use full terminal
     if width is None:
-        width = os.get_terminal_size().columns
+        width = os.get_terminal_size().columns - 1
     # end with
     return width
 # end def
