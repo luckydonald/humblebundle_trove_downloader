@@ -92,7 +92,7 @@ for chunk in range(CHUNKS_COUNT + 1):
 
 GAMES_COUNT = len(GAME_DATA)
 GAMES_COUNT_LEN = len(str(GAMES_COUNT))
-
+DOWNLOAD_TOTAL_SIZE = 0
 DOWNLOADS: List[URLData] = []  # file: url
 for i, game in enumerate(GAME_DATA):
     part = f"<{i + 1:0>{GAMES_COUNT_LEN}}/{GAMES_COUNT}>"
@@ -129,15 +129,19 @@ for i, game in enumerate(GAME_DATA):
                 sha1=download_meta.get('sha1', None) if download_type == TYPE_WEB else None,  # only the actual file.
             ))
         # end for
+        DOWNLOAD_TOTAL_SIZE += download_meta.get('file_size', 0)
     # end for
     with open(path.join(game_path, 'info.json'), 'w') as f:
         json.dump(game, f, indent=2, sort_keys=True)
     # end with
 # end for
 
+logger.info(f'---> Total storage needed: {human_size(DOWNLOAD_TOTAL_SIZE)}')
+
 DOWNLOADS_COUNT = len(DOWNLOADS)
 DOWNLOADS_COUNT_LEN = len(str(DOWNLOADS_COUNT))
 url_data: URLData
+downloaded_size = 0
 for i, url_data in enumerate(DOWNLOADS):
     part = f"[{i + 1:0>{DOWNLOADS_COUNT_LEN}}/{DOWNLOADS_COUNT}]"
     logger.info(f'{part}: Checking {url_data.file!r} from {url_data.url!r}...')
@@ -149,7 +153,10 @@ for i, url_data in enumerate(DOWNLOADS):
             # check file size
             logger.debug(f'{part}: File {url_data.file!r} already exists. Checking size.')
             disk_size = path.getsize(url_data.file)
-            if disk_size != url_data.size:
+            if disk_size == url_data.size:
+                logger.debug(f'{part}: File {url_data.file!r} already exists. Checking size.')
+                downloaded_size += url_data.size
+            else :
                 logger.warning(f'Existing file {url_data.file!r} has wrong filesize. Disk is {disk_size!r}, online is {url_data.size!r}.')
                 needs_download = True
             # end if
@@ -245,5 +252,6 @@ for i, url_data in enumerate(DOWNLOADS):
         print()  # enforce linebreak
     # end with
     logger.success(f'{part}: Downloaded {url_data.file!r}.')
+    logger.success(f'{part}: Overall download progress: {human_size(downloaded_size)} of {human_size(DOWNLOAD_TOTAL_SIZE)}')
 # end for
 
