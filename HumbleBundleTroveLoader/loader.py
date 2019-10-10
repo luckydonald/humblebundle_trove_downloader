@@ -17,7 +17,8 @@ logging.add_colored_handler(level=logging.DEBUG)
 
 URL_TROVE = "https://www.humblebundle.com/monthly/trove"
 URL_DL_SIGN = "https://www.humblebundle.com/api/v1/user/download/sign"
-URL_DOWNLOAD = "https://dl.humble.com/{file}"
+URL_DOWNLOADS = "https://dl.humble.com/{file}"
+URL_INFO_CHUNKS = "https://www.humblebundle.com/api/v1/trove/chunk?index={chunk}"
 
 DOWNLOAD_URL_TYPE_TO_SIGNATURE_TYPE_MAP = {
     'web': 'signed_url',
@@ -61,12 +62,27 @@ with open("/tmp/trove.html", "wb") as f:
     f.write(response.content)
 # end if
 
+# parse page
 soup = BeautifulSoup(response.content, features="html.parser")
 json_script_tag_trove_data_element = soup.find('script', id='webpack-monthly-trove-data')
 json_script_tag_trove_data_string = "\n".join(json_script_tag_trove_data_element.contents)
 trove_data = json.loads(json_script_tag_trove_data_string)
 
-GAME_DATA = trove_data['standardProducts']
+CHUNKS_COUNT = trove_data['chunks']
+GAME_DATA = []
+
+logger.info(f"We have {CHUNKS_COUNT} pages of {trove_data['gamesPerChunk']} games each to load.")
+for chunk in range(CHUNKS_COUNT):
+    logger.debug(f"Requesting data of page {chunk + 1} of {CHUNKS_COUNT}.")
+    response = requests.request(
+        method='GET',
+        url=URL_TROVE,
+        cookies=COOKIE_JAR
+    )
+    chunk_data = json.loads(json_script_tag_trove_data_string)
+    GAME_DATA.extend(chunk_data)
+# end for
+
 
 
 DOWNLOADS: List[URLData] = []  # file: url
@@ -84,7 +100,6 @@ for game in GAME_DATA:
                 "machine_name": download_meta['machine_name'],
                 "filename": download
             }
-            download_file_path = path.join(download_path, download)
             for meta_file in ('md5', 'sha1'):
                 if meta_file not in download_meta:
                     continue
@@ -95,9 +110,9 @@ for game in GAME_DATA:
                 # end with
             # end for
             DOWNLOADS.append(URLData(
-                url=URL_DOWNLOAD.format(file=download),
+                url=URL_DOWNLOADS.format(file=download),
                 auth_request=auth_request_data,
-                file=download_file_path,
+                file=path.join(download_path, download.replace('/', ':')),
                 type=download_type,
                 size=download_meta.get('file_size', None) if download_type == 'web' else None,  # only the actual file.
                 md5=download_meta.get('md5', None) if download_type == 'web' else None,  # only the actual file.
@@ -112,7 +127,7 @@ for game in GAME_DATA:
 
 url_data: URLData
 for i, url_data in enumerate(DOWNLOADS):
-    logger.info(f'Downloading {url_data.file!r} from {url_data.url!r}')
+    logger.info(f'Checking {url_data.file!r} from {url_data.url!r}...')
     # check if file already exists.
     if path.exists(url_data.file):
         logger.debug(f'File {url_data.file!r} already exists.')
