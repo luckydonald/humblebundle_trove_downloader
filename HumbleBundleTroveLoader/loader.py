@@ -1,3 +1,4 @@
+import torrent_parser
 import requests
 import hashlib
 import json
@@ -185,6 +186,14 @@ for i, url_data in enumerate(DOWNLOADS):
                 )
                 # needs_download = True  # this seems to be unreliable.
             # end if
+        elif url_data.type == TYPE_BITTORRENT:
+            logger.debug(f'{part}: File {url_data.file!r} already exists. Checking being valid torrent file.')
+            try:
+                torrent_parser.parse_torrent_file(url_data.file)
+            except torrent_parser.InvalidTorrentDataException as e:
+                logger.warning(f'{part}: Could not parse existing torrent file.\n{e!s}', exc_info=True)
+                needs_download = True
+            # end try
         else:  # neither torrent nor direct web download
             logger.fatal(
                 f'{part}: Could not check size, md5 or sha1 for file {url_data.file!r} as it is not of type'
