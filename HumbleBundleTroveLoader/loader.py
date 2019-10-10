@@ -214,7 +214,7 @@ for i, url_data in enumerate(DOWNLOADS):
     logger.info(f'{part}: Downloading {url_data.file!r} from signed url {url!r}, size reported by trove: {human_size(url_data.size)}')
     with requests.get(url, stream=True) as r:
         logger.debug(f'{part}: Downloading {url_data.file!r} from signed url {url!r}: {r}')
-        logger.info(f"{part}: Download size reported by server: {human_size(r.headers.get('content-length').size)}")
+        logger.info(f"{part}: Download size reported by server: {human_size(r.headers.get('content-length'))}")
         prefix = f"{part}: DOWNLOAD {part}"
         callback = create_advanced_copy_progress(prefix=prefix, width=None, use_color=True)
         with open(url_data.file, 'wb') as f:
