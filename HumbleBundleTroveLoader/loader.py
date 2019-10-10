@@ -127,22 +127,25 @@ for game in GAME_DATA:
     # end with
 # end for
 
+DOWNLOADS_COUNT = len(DOWNLOADS)
+DOWNLOADS_COUNT_LEN = len(str(DOWNLOADS_COUNT))
 url_data: URLData
 for i, url_data in enumerate(DOWNLOADS):
-    logger.info(f'Checking {url_data.file!r} from {url_data.url!r}...')
+    part = f"[{i:0>{DOWNLOADS_COUNT_LEN}}/|{DOWNLOADS_COUNT}]"
+    logger.info(f'{part}: Checking {url_data.file!r} from {url_data.url!r}...')
     # check if file already exists.
     if path.exists(url_data.file):
-        logger.debug(f'File {url_data.file!r} already exists.')
+        logger.debug(f'{part}: File {url_data.file!r} already exists.')
         needs_download = False
         if url_data.type != 'web':
             logger.info(
-                f"Could not checking size, md5 or sha1 for file {url_data.file!r} as it is not the main 'web' file, "
+                f"{part}: Could not check size, md5 or sha1 for file {url_data.file!r} as it is not the main 'web' file, "
                 f'but is of type {url_data.type!r}.'
             )
             needs_download = None
         else:
             # check file size
-            logger.debug(f'File {url_data.file!r} already exists. Checking size.')
+            logger.debug(f'{part}: File {url_data.file!r} already exists. Checking size.')
             disk_size = path.getsize(url_data.file)
             if disk_size != url_data.size:
                 logger.warning(f'Existing file {url_data.file!r} has wrong filesize. Disk is {disk_size}, online is {url_data.size}.')
@@ -150,10 +153,10 @@ for i, url_data in enumerate(DOWNLOADS):
             # end if
 
             # check md5 and sha1 hash
-            logger.debug(f'File {url_data.file!r} already exists. Checking file hashes.')
+            logger.debug(f'{part}: File {url_data.file!r} already exists. Checking file hashes.')
             hash_md5 = hashlib.md5()
             hash_sha1 = hashlib.sha1()
-            callback = create_advanced_copy_progress(prefix="HASH ", width=None, use_color=True)
+            callback = create_advanced_copy_progress(prefix=f"{part}: HASH ", width=None, use_color=True)
             already_copied = 0
             with open(url_data.file, "rb") as f:
                 for chunk in iter(lambda: f.read(HASH_CHUNK_SIZE), b""):
@@ -168,26 +171,26 @@ for i, url_data in enumerate(DOWNLOADS):
             md5 = hash_md5.hexdigest()
             sha1 = hash_sha1.hexdigest()
             if url_data.md5 is None:
-                logger.warning(f'Existing file {url_data.file!r} has no md5 hashsum. Disk is {md5}.')
+                logger.warning(f'{part}: Existing file {url_data.file!r} has no md5 hashsum. Disk is {md5}.')
             elif md5 != url_data.md5:
-                logger.warning(f'Existing file {url_data.file!r} has wrong md5 hashsum. Disk is {md5}, online is {url_data.md5}.')
+                logger.warning(f'{part}: Existing file {url_data.file!r} has wrong md5 hashsum. Disk is {md5}, online is {url_data.md5}.')
                 needs_download = True
             # end if
             if url_data.sha1 is None:
-                logger.warning(f'Existing file {url_data.file!r} has no sha1 hashsum. Disk is {sha1}.')
+                logger.warning(f'{part}: Existing file {url_data.file!r} has no sha1 hashsum. Disk is {sha1}.')
             elif sha1 != url_data.sha1:
-                logger.warning(f'Existing file {url_data.file!r} has wrong sha1 hashsum. Disk is {sha1}, online is {url_data.sha1}.')
+                logger.warning(f'{part}: Existing file {url_data.file!r} has wrong sha1 hashsum. Disk is {sha1}, online is {url_data.sha1}.')
                 # needs_download = True  # this seems to be unreliable.
             # end if
         # end if
         if needs_download is None:
-            logger.success(f'Existing file {url_data.file!r} was found.')
+            logger.success(f'{part}: Existing file {url_data.file!r} was found.')
             continue
         elif not needs_download:
-            logger.success(f'Existing file {url_data.file!r} has correct metadata.')
+            logger.success(f'{part}: Existing file {url_data.file!r} has correct metadata.')
             continue
         else:
-            logger.warning(f'Will download again.')
+            logger.warning(f'{part}: Will download again.')
         # end if
     # end if
 
@@ -203,16 +206,17 @@ for i, url_data in enumerate(DOWNLOADS):
     )
     json_signature = signature.json()
     url = json_signature[DOWNLOAD_URL_TYPE_TO_SIGNATURE_TYPE_MAP[url_data.type]]
-    logger.info(f'Downloading {url_data.file!r} from signed url {url!r}')
+    logger.info(f'{part}: Downloading {url_data.file!r} from signed url {url!r}')
     with requests.get(url, stream=True) as r:
-        logger.debug(f'Downloading {url_data.file!r} from signed url {url!r}: {r}')
-        callback = create_advanced_copy_progress(prefix="DOWNLOAD ", width=None, use_color=True)
+        logger.debug(f'{part}: Downloading {url_data.file!r} from signed url {url!r}: {r}')
+        prefix = f"{part}: DOWNLOAD {part}"
+        callback = create_advanced_copy_progress(prefix=prefix, width=None, use_color=True)
         with open(url_data.file, 'wb') as f:
             copyfileobj(r.raw, f, callback=callback, total=url_data.size, length=DOWNLOAD_CHUNK_SIZE)
         # end with
         callback(url_data.size, DOWNLOAD_CHUNK_SIZE, url_data.size)  # enforce 100%
         print()  # enforce linebreak
     # end with
-    logger.success(f'Downloaded {url_data.file!r}.')
+    logger.success(f'{part}: Downloaded {url_data.file!r}.')
 # end for
 
