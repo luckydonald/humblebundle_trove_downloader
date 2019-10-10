@@ -172,7 +172,7 @@ def create_advanced_copy_progress(prefix="", suffix="", width=None):
 
     def advanced_copy_progress(copied, length, total):
         if total is None:
-            print('\r' + prefix + build_activity_line(copied/length, width=width), end='')
+            print('\r' + prefix + build_activity_line(copied//length, width=width), end='')
         else:
             print('\r' + build_progress_line(100*copied/total, width=width), end='')
         # end if
