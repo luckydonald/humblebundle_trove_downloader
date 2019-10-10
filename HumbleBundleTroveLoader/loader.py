@@ -24,23 +24,6 @@ DOWNLOAD_URL_TYPE_TO_SIGNATURE_TYPE_MAP = {
     'bittorrent': 'signed_torrent_url',
 }
 
-response = requests.request(
-    method='GET',
-    url=URL_TROVE,
-    cookies=COOKIE_JAR
-)
-
-with open("/tmp/trove.html", "wb") as f:
-    f.write(response.content)
-# end if
-
-soup = BeautifulSoup(response.content, features="html.parser")
-json_script_tag_trove_data_element = soup.find('script', id='webpack-monthly-trove-data')
-json_script_tag_trove_data_string = "\n".join(json_script_tag_trove_data_element.contents)
-trove_data = json.loads(json_script_tag_trove_data_string)
-
-GAME_DATA = trove_data['standardProducts']
-
 
 class URLData(object):
     url: str
@@ -64,7 +47,29 @@ class URLData(object):
 # end class
 
 
-DOWNLOADS:List[URLData] = []  # file: url
+# now we can start.
+
+
+# find out how many chunks we need to load.
+response = requests.request(
+    method='GET',
+    url=URL_TROVE,
+    cookies=COOKIE_JAR
+)
+
+with open("/tmp/trove.html", "wb") as f:
+    f.write(response.content)
+# end if
+
+soup = BeautifulSoup(response.content, features="html.parser")
+json_script_tag_trove_data_element = soup.find('script', id='webpack-monthly-trove-data')
+json_script_tag_trove_data_string = "\n".join(json_script_tag_trove_data_element.contents)
+trove_data = json.loads(json_script_tag_trove_data_string)
+
+GAME_DATA = trove_data['standardProducts']
+
+
+DOWNLOADS: List[URLData] = []  # file: url
 for game in GAME_DATA:
     title = game['machine_name']
     title = game.get('human_name', title)
