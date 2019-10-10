@@ -80,9 +80,8 @@ for chunk in range(CHUNKS_COUNT):
         cookies=COOKIE_JAR
     )
     chunk_data = json.loads(json_script_tag_trove_data_string)
-    GAME_DATA.extend(chunk_data)
+    GAME_DATA.extend(chunk_data.get('standardProducts', []))
 # end for
-
 
 
 DOWNLOADS: List[URLData] = []  # file: url
