@@ -79,7 +79,7 @@ CHUNKS_COUNT = trove_data['chunks']
 GAME_DATA = []
 
 logger.info(f"We have {CHUNKS_COUNT} pages of {trove_data['gamesPerChunk']} games each to load.")
-for chunk in range(CHUNKS_COUNT):
+for chunk in range(CHUNKS_COUNT + 1):
     logger.debug(f"Requesting data of page {chunk + 1} of {CHUNKS_COUNT}.")
     response = requests.request(
         method='GET',
@@ -90,12 +90,16 @@ for chunk in range(CHUNKS_COUNT):
     GAME_DATA.extend(chunk_data)
 # end for
 
+GAMES_COUNT = len(GAME_DATA)
+GAMES_COUNT_LEN = len(str(GAMES_COUNT))
 
 DOWNLOADS: List[URLData] = []  # file: url
-for game in GAME_DATA:
+for i, game in enumerate(GAME_DATA):
+    part = f"<{i + 1:0>{GAMES_COUNT_LEN}}/{GAMES_COUNT}>"
     title = game['machine_name']
     title = game.get('human_name', title)
     title = game.get('human-name', title)
+    logger.debug(f'{part}: Found Game {title!r} with {len(game["downloads"])} downloads.')
     game_path = path.join(DOWNLOAD_DIR, title)
     mkdir_p(game_path)
     for platform, download_meta in game['downloads'].items():
