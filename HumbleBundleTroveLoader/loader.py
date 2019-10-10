@@ -195,11 +195,15 @@ for i, url_data in enumerate(DOWNLOADS):
     json_signature = signature.json()
     url = json_signature[DOWNLOAD_URL_TYPE_TO_SIGNATURE_TYPE_MAP[url_data.type]]
     logger.info(f'Downloading {url_data.file!r} from signed url {url!r}')
+    chunk_size = 16*1024
     with requests.get(url, stream=True) as r:
         logger.debug(f'Downloading {url_data.file!r} from signed url {url!r}: {r}')
+        callback = create_advanced_copy_progress(prefix="DOWNLOAD ", width=None, use_color=True)
         with open(url_data.file, 'wb') as f:
-            copyfileobj(r.raw, f, callback=create_advanced_copy_progress(prefix="DL ", width=30), total=url_data.size)
+            copyfileobj(r.raw, f, callback=callback, total=url_data.size, length=chunk_size)
         # end with
+        callback(url_data.size, chunk_size, url_data.size)  # enforce 100%
+        print()  # enforce linebreak
     # end with
     logger.success(f'Downloaded {url_data.file!r}.')
 # end for
