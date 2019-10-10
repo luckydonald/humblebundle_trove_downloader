@@ -10,6 +10,7 @@ from progress_bar import copyfileobj, create_advanced_copy_progress
 from luckydonaldUtils.logger import logging
 from luckydonaldUtils.files.basics import mkdir_p
 
+
 logger = logging.getLogger(__name__)
 logging.add_colored_handler(level=logging.DEBUG)
 
@@ -18,9 +19,12 @@ URL_DL_SIGN = "https://www.humblebundle.com/api/v1/user/download/sign"
 URL_DOWNLOADS = "https://dl.humble.com/{file}"
 URL_INFO_CHUNKS = "https://www.humblebundle.com/api/v1/trove/chunk?index={chunk}"
 
+TYPE_WEB = 'web'
+TYPE_BITTORRENT = 'bittorrent'
+
 DOWNLOAD_URL_TYPE_TO_SIGNATURE_TYPE_MAP = {
-    'web': 'signed_url',
-    'bittorrent': 'signed_torrent_url',
+    TYPE_WEB: 'signed_url',
+    TYPE_BITTORRENT: 'signed_torrent_url',
 }
 
 HASH_CHUNK_SIZE = 16 * 1024
@@ -115,9 +119,9 @@ for game in GAME_DATA:
                 auth_request=auth_request_data,
                 file=path.join(download_path, download.replace('/', ':')),
                 type=download_type,
-                size=download_meta.get('file_size', None) if download_type == 'web' else None,  # only the actual file.
-                md5=download_meta.get('md5', None) if download_type == 'web' else None,  # only the actual file.
-                sha1=download_meta.get('sha1', None) if download_type == 'web' else None,  # only the actual file.
+                size=download_meta.get('file_size', None) if download_type == TYPE_WEB else None,  # only the actual file.
+                md5=download_meta.get('md5', None) if download_type == TYPE_WEB else None,  # only the actual file.
+                sha1=download_meta.get('sha1', None) if download_type == TYPE_WEB else None,  # only the actual file.
             ))
         # end for
     # end for
@@ -136,13 +140,7 @@ for i, url_data in enumerate(DOWNLOADS):
     if path.exists(url_data.file):
         logger.debug(f'{part}: File {url_data.file!r} already exists.')
         needs_download = False
-        if url_data.type != 'web':
-            logger.info(
-                f"{part}: Could not check size, md5 or sha1 for file {url_data.file!r} as it is not the main 'web' file, "
-                f'but is of type {url_data.type!r}.'
-            )
-            needs_download = None
-        else:
+        if url_data.type == TYPE_WEB:
             # check file size
             logger.debug(f'{part}: File {url_data.file!r} already exists. Checking size.')
             disk_size = path.getsize(url_data.file)
@@ -187,9 +185,15 @@ for i, url_data in enumerate(DOWNLOADS):
                 )
                 # needs_download = True  # this seems to be unreliable.
             # end if
+        else:  # neither torrent nor direct web download
+            logger.fatal(
+                f'{part}: Could not check size, md5 or sha1 for file {url_data.file!r} as it is not of type'
+                f' {TYPE_WEB!r} or {TYPE_BITTORRENT!r},  but is of type {url_data.type!r}.'
+            )
+            needs_download = None
         # end if
         if needs_download is None:
-            logger.success(f'{part}: File {url_data.file!r} was found. Skipping download.')
+            logger.success(f'{part}: File {url_data.file!r} was found. Could be correct. Skipping download.')
             continue
         elif not needs_download:
             logger.success(f'{part}: Existing file {url_data.file!r} has correct metadata. Skipping download.')
