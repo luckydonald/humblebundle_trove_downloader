@@ -68,6 +68,8 @@ def build_progress_bar(percent: float, width: Union[None, int] = None, use_color
         else:
             blocks_widget.append(COLOR_RED)
         # end if
+    else:
+        blocks_widget.append("")  # empty, so that the counting below has an offset of +1 in both cases.
     # end if
     blocks_widget.extend([FULL_BLOCK] * full_blocks)
     blocks_widget.extend([INCOMPLETE_BLOCK_GRAD[0]] * empty_blocks)
@@ -78,7 +80,10 @@ def build_progress_bar(percent: float, width: Union[None, int] = None, use_color
     # depending on remainder
     if remainder > epsilon:
         grad_index = int((len(INCOMPLETE_BLOCK_GRAD) * remainder)/perc_per_block)
-        blocks_widget[full_blocks] = INCOMPLETE_BLOCK_GRAD[grad_index]
+        # now set the item at the calculated position to the partial element.
+        # we include an offset of +1 to account for the possible color code block before that.
+        # in non-color mode there is also placed an empty element in that list, so that index stays the same.
+        blocks_widget[full_blocks + 1] = INCOMPLETE_BLOCK_GRAD[grad_index]
     # end if
     if use_color:
         blocks_widget.append(COLOR_DEFAULT)
@@ -122,7 +127,7 @@ def build_activity_bar(integer: int, width: int, use_color: bool) -> str:
 def prepare_width(width):
     # if width unset use full terminal
     if width is None:
-        width = os.get_terminal_size().columns - 1
+        width = os.get_terminal_size().columns
     # end with
     return width
 # end def
