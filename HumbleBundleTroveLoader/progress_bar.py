@@ -226,7 +226,11 @@ def create_advanced_copy_progress(prefix="", suffix="", width=None, use_color=Fa
 
     def advanced_copy_progress(copied, length, total):
         if total is None:
-            progress = copied // length
+            if copied is None or length is None:
+                progress = int(time() * 10)
+            else:
+                progress = copied // length
+            # end if
             print('\r' + prefix + build_activity_line(progress, width=width, use_color=use_color) + suffix, end='')
         else:
             print('\r' + prefix + build_progress_line(100*copied/total, width=width, use_color=use_color) + suffix, end='')
