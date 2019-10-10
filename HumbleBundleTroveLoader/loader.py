@@ -212,11 +212,13 @@ for i, url_data in enumerate(DOWNLOADS):
     json_signature = signature.json()
     url = json_signature[DOWNLOAD_URL_TYPE_TO_SIGNATURE_TYPE_MAP[url_data.type]]
     file_size = int(url_data.size) if isinstance(url_data.size, str) else url_data.size
-    logger.info(f'{part}: Downloading {url_data.file!r} from signed url {url!r}, size reported by trove: {human_size(file_size)}')
+    logger.info(f'{part}: Downloading {url_data.file!r} from signed url {url!r}, size reported by trove: {human_size(file_size)!r}')
     with requests.get(url, stream=True) as resp:
         logger.debug(f'{part}: Response: {resp}')
-        file_size = int(resp.headers.get('content-length', file_size))
-        logger.info(f"{part}: Download size reported by server: {human_size(file_size)}")
+        dl_file_size = resp.headers.get('content-length', None)
+        dl_file_size = int(dl_file_size) if dl_file_size is not None else None
+        file_size = dl_file_size if dl_file_size is not None else file_size
+        logger.info(f"{part}: Download size reported by server: {human_size(dl_file_size)!r}")
         prefix = f"{part}: DOWNLOAD "
         callback = create_advanced_copy_progress(prefix=prefix, width=None, use_color=True)
         with open(url_data.file, 'wb') as f:
