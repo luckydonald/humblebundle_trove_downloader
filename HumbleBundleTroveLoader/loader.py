@@ -147,7 +147,7 @@ for i, url_data in enumerate(DOWNLOADS):
             logger.debug(f'{part}: File {url_data.file!r} already exists. Checking size.')
             disk_size = path.getsize(url_data.file)
             if disk_size != url_data.size:
-                logger.warning(f'Existing file {url_data.file!r} has wrong filesize. Disk is {disk_size}, online is {url_data.size}.')
+                logger.warning(f'Existing file {url_data.file!r} has wrong filesize. Disk is {disk_size!r}, online is {url_data.size!r}.')
                 needs_download = True
             # end if
 
@@ -170,15 +170,21 @@ for i, url_data in enumerate(DOWNLOADS):
             md5 = hash_md5.hexdigest()
             sha1 = hash_sha1.hexdigest()
             if url_data.md5 is None:
-                logger.warning(f'{part}: Existing file {url_data.file!r} has no md5 hashsum. Disk is {md5}.')
+                logger.warning(f'{part}: Existing file {url_data.file!r} has no md5 hashsum. Disk is {md5!r}.')
             elif md5 != url_data.md5:
-                logger.warning(f'{part}: Existing file {url_data.file!r} has wrong md5 hashsum. Disk is {md5}, online is {url_data.md5}.')
+                logger.warning(f'{part}: Existing file {url_data.file!r} has wrong md5 hashsum. Disk is {md5!r}, online is {url_data.md5!r}.')
                 needs_download = True
             # end if
             if url_data.sha1 is None:
-                logger.warning(f'{part}: Existing file {url_data.file!r} has no sha1 hashsum. Disk is {sha1}.')
+                logger.info(
+                    f'{part}: Existing file {url_data.file!r} has no sha1 hashsum. Disk is {sha1!r}.\n'
+                    f'SHA1 hash of Humble Bundle Trove items is often unreliable. Therefore this message can be ignored.'
+                )
             elif sha1 != url_data.sha1:
-                logger.warning(f'{part}: Existing file {url_data.file!r} has wrong sha1 hashsum. Disk is {sha1}, online is {url_data.sha1}.')
+                logger.info(
+                    f'{part}: Existing file {url_data.file!r} has wrong sha1 hashsum. Disk is {sha1!r}, online is {url_data.sha1!r}.\n'
+                    f'SHA1 hash of Humble Bundle Trove items is often unreliable. Therefore this message can be ignored.'
+                )
                 # needs_download = True  # this seems to be unreliable.
             # end if
         # end if
