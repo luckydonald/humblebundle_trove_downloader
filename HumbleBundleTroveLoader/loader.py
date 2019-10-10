@@ -25,7 +25,7 @@ DOWNLOAD_URL_TYPE_TO_SIGNATURE_TYPE_MAP = {
     'bittorrent': 'signed_torrent_url',
 }
 
-HASH_CHUNK_SIZE = 4 * 1024
+HASH_CHUNK_SIZE = 16 * 1024
 DOWNLOAD_CHUNK_SIZE = 16 * 1024
 
 
