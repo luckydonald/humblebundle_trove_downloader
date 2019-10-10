@@ -220,7 +220,7 @@ for i, url_data in enumerate(DOWNLOADS):
         prefix = f"{part}: DOWNLOAD {part}"
         callback = create_advanced_copy_progress(prefix=prefix, width=None, use_color=True)
         with open(url_data.file, 'wb') as f:
-            copyfileobj(r.raw, f, callback=callback, total=file_size, length=DOWNLOAD_CHUNK_SIZE)
+            copyfileobj(resp.raw, f, callback=callback, total=file_size, length=DOWNLOAD_CHUNK_SIZE)
         # end with
         callback(url_data.size, DOWNLOAD_CHUNK_SIZE, url_data.size)  # enforce 100%
         print()  # enforce linebreak
