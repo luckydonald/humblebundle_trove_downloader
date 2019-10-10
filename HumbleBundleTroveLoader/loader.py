@@ -150,11 +150,18 @@ for i, url_data in enumerate(DOWNLOADS):
             logger.debug(f'File {url_data.file!r} already exists. Checking file hashes.')
             hash_md5 = hashlib.md5()
             hash_sha1 = hashlib.sha1()
+            callback = create_advanced_copy_progress(prefix="HASH ", width=None, use_color=True)
+            chunk_size = 4096
+            already_copied = 0
             with open(url_data.file, "rb") as f:
-                for chunk in iter(lambda: f.read(4096), b""):
+                for chunk in iter(lambda: f.read(chunk_size), b""):
+                    callback(already_copied, chunk_size, disk_size)
                     hash_md5.update(chunk)
                     hash_sha1.update(chunk)
+                    already_copied += chunk_size
                 # end for
+                callback(disk_size, chunk_size, disk_size)  # enforce 100%
+                print()  # enforce linebreak
             # end with
             md5 = hash_md5.hexdigest()
             sha1 = hash_sha1.hexdigest()
