@@ -1,6 +1,9 @@
 import os
 import shutil
+from time import time
 from typing import Union
+
+from luckydonaldUtils.logger import ColoredFormatter
 
 """
 A progress bar.
@@ -12,11 +15,31 @@ FULL_BLOCK = '█'
 # this is a gradient of incompleteness
 INCOMPLETE_BLOCK_GRAD = ['░', '▒', '▓']
 
-
+# for unknown length downloads
 ACTIVITY_MODE = ['▹', '▸']
 
 
-def build_progress_bar(percent: float, width: Union[None, int] = None) -> str:
+def prepare_color(name):
+    # noinspection PyCallByClass
+    return ColoredFormatter.Color.prepare_color(ColoredFormatter.Color, ColoredFormatter.Color.colors[name])
+# end def
+
+
+COLOR_DEFAULT = prepare_color('default')
+COLOR_BLACK = prepare_color('black')
+COLOR_RED = prepare_color('red')
+COLOR_GREEN = prepare_color('green')
+COLOR_YELLOW = prepare_color('yellow')
+COLOR_BLUE = prepare_color('blue')
+COLOR_MAGENTA = prepare_color('magenta')
+COLOR_CYAN = prepare_color('cyan')
+COLOR_WHITE = prepare_color('white')
+COLOR_GREY = prepare_color('grey')
+COLOR_BGRED = prepare_color('bgred')
+COLOR_BGGREY = prepare_color('bggrey')
+
+
+def build_progress_bar(percent: float, width: Union[None, int] = None, use_color: bool = False) -> str:
     # This will only work for python 3.3+ due to use of
     # os.get_terminal_size the print function etc.
     assert (isinstance(percent, float))
@@ -34,7 +57,19 @@ def build_progress_bar(percent: float, width: Union[None, int] = None) -> str:
     empty_blocks = width - full_blocks
 
     # build blocks widget
-    blocks_widget = ([FULL_BLOCK] * full_blocks)
+    blocks_widget = []
+    if use_color:
+        if percent > 75.:
+            blocks_widget.append(COLOR_YELLOW)
+        elif percent > 90.:
+            blocks_widget.append(COLOR_CYAN)
+        elif percent == 100.:
+            blocks_widget.append(COLOR_GREEN)
+        else:
+            blocks_widget.append(COLOR_RED)
+        # end if
+    # end if
+    blocks_widget.extend([FULL_BLOCK] * full_blocks)
     blocks_widget.extend([INCOMPLETE_BLOCK_GRAD[0]] * empty_blocks)
     # marginal case - remainder due to how granular our blocks are
     remainder = percent - full_blocks * perc_per_block
@@ -45,15 +80,19 @@ def build_progress_bar(percent: float, width: Union[None, int] = None) -> str:
         grad_index = int((len(INCOMPLETE_BLOCK_GRAD) * remainder)/perc_per_block)
         blocks_widget[full_blocks] = INCOMPLETE_BLOCK_GRAD[grad_index]
     # end if
+    if use_color:
+        blocks_widget.append(COLOR_DEFAULT)
+    # end if
     return ''.join(blocks_widget)
 # end def
 
 
-def build_activity_bar(integer: int, width: int) -> str:
+def build_activity_bar(integer: int, width: int, use_color: bool) -> str:
     """
     Without having real progress.
     :param integer:
     :param width:
+    :param use_color:
     :return:
     """
     assert (isinstance(integer, int))
@@ -62,7 +101,21 @@ def build_activity_bar(integer: int, width: int) -> str:
     assert (width >= 3)  # not very meaningful if not
 
     position = integer % width
-    return (ACTIVITY_MODE[0] * (position - 1)) + (ACTIVITY_MODE[1]) + (ACTIVITY_MODE[0] * (width - position))
+
+    inactive = ACTIVITY_MODE[0]
+    active = ACTIVITY_MODE[1]
+
+    if use_color:
+        return COLOR_BLUE + (inactive * (position - 1)) + \
+               COLOR_CYAN + active + \
+               COLOR_BLUE + (inactive * (width - position)) + \
+               COLOR_DEFAULT
+    # end if
+    return (
+        (inactive * (position - 1)) +
+        active +
+        (inactive * (width - position))
+    )
 # end def
 
 
@@ -93,7 +146,12 @@ def build_process_label(percent: float, decimals: int = 2) -> str:
 # end def
 
 
-def build_progress_line(percent: float, width: Union[None, int] = None, decimals: int = 2) -> str:
+def build_progress_line(
+    percent: float,
+    width: Union[None, int] = None,
+    decimals: int = 2,
+    use_color: bool = False
+) -> str:
     label = build_process_label(percent, decimals)
     remaining_width = width - len(label)
     if remaining_width > 5:
@@ -102,18 +160,14 @@ def build_progress_line(percent: float, width: Union[None, int] = None, decimals
         remaining_width -= 1  # subtract the space
     # end if
 
-    return build_progress_bar(percent, remaining_width) + label
+    return build_progress_bar(percent, remaining_width, use_color=use_color) + label
 # end def
 
 
-def build_activity_line(integer: int, width: Union[None, int] = None) -> str:
+def build_activity_line(integer: int, width: Union[None, int] = None, use_color: bool = False) -> str:
     assert(width > 2)
-    return build_activity_bar(integer, width)
+    return build_activity_bar(integer, width, use_color)
 # end def
-
-
-def copy_progress(copied, total):
-    print('\r' + progress_percentage(100*copied/total, width=30), end='')
 
 
 def copyfile(src, dst, *, follow_symlinks=True):
@@ -166,15 +220,15 @@ def copy_with_progress(src, dst, *, follow_symlinks=True):
     return dst
 
 
-def create_advanced_copy_progress(prefix="", suffix="", width=None):
+def create_advanced_copy_progress(prefix="", suffix="", width=None, use_color=False):
     width = prepare_width(width)
     width -= len(prefix) + len(suffix)
 
     def advanced_copy_progress(copied, length, total):
         if total is None:
-            print('\r' + prefix + build_activity_line(copied//length, width=width), end='')
+            print('\r' + prefix + build_activity_line(copied//length, width=width, use_color=use_color), end='')
         else:
-            print('\r' + build_progress_line(100*copied/total, width=width), end='')
+            print('\r' + build_progress_line(100*copied/total, width=width, use_color=use_color), end='')
         # end if
     # end def
     return advanced_copy_progress
