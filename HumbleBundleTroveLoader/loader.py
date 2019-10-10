@@ -3,7 +3,7 @@ import hashlib
 import json
 from os import path
 from bs4 import BeautifulSoup
-from typing import List
+from typing import List, Union
 from settings import DOWNLOAD_DIR, COOKIE_JAR
 from file_size import human_size
 from progress_bar import copyfileobj, create_advanced_copy_progress
@@ -32,9 +32,9 @@ class URLData(object):
     auth_request: dict
     file: str
     type: str
-    size: int
-    md5: str
-    sha1: str
+    size: Union[int, None]
+    md5: Union[str, None]
+    sha1: Union[str, None]
 
     # noinspection PyShadowingNames
     def __init__(self, url: str, auth_request: dict, file: str, type: str, size: int, md5: str, sha1: str) -> None:
