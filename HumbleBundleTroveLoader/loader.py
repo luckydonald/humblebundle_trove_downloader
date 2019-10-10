@@ -217,7 +217,7 @@ for i, url_data in enumerate(DOWNLOADS):
         logger.debug(f'{part}: Response: {resp}')
         file_size = int(resp.headers.get('content-length', file_size))
         logger.info(f"{part}: Download size reported by server: {human_size(file_size)}")
-        prefix = f"{part}: DOWNLOAD {part}"
+        prefix = f"{part}: DOWNLOAD "
         callback = create_advanced_copy_progress(prefix=prefix, width=None, use_color=True)
         with open(url_data.file, 'wb') as f:
             copyfileobj(resp.raw, f, callback=callback, total=file_size, length=DOWNLOAD_CHUNK_SIZE)
