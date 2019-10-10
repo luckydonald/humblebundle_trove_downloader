@@ -112,14 +112,14 @@ for i, url_data in enumerate(DOWNLOADS):
     if path.exists(url_data.file):
         logger.debug(f'File {url_data.file!r} already exists. Checking size.')
 
-        needs_download = None
+        needs_download = False
 
         if url_data.type != 'web':
             logger.info(
-                f'Could not checking size, md5 or sha1 for file {url_data.file!r} as it is not the main "web" file, '
-                f'but is of type {url_data.type}.'
+                f"Could not checking size, md5 or sha1 for file {url_data.file!r} as it is not the main 'web' file, "
+                f'but is of type {url_data.type!r}.'
             )
-            needs_download = False
+            needs_download = None
         else:
             # check file size
             disk_size = path.getsize(url_data.file)
