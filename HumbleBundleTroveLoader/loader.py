@@ -87,7 +87,7 @@ for chunk in range(CHUNKS_COUNT):
         cookies=COOKIE_JAR
     )
     chunk_data = response.json()
-    GAME_DATA.extend(chunk_data.get('standardProducts', []))
+    GAME_DATA.extend(chunk_data)
 # end for
 
 
