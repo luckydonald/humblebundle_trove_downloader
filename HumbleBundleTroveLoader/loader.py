@@ -130,7 +130,7 @@ DOWNLOADS_COUNT = len(DOWNLOADS)
 DOWNLOADS_COUNT_LEN = len(str(DOWNLOADS_COUNT))
 url_data: URLData
 for i, url_data in enumerate(DOWNLOADS):
-    part = f"[{i:0>{DOWNLOADS_COUNT_LEN}}/{DOWNLOADS_COUNT}]"
+    part = f"[{i + 1:0>{DOWNLOADS_COUNT_LEN}}/{DOWNLOADS_COUNT}]"
     logger.info(f'{part}: Checking {url_data.file!r} from {url_data.url!r}...')
     # check if file already exists.
     if path.exists(url_data.file):
