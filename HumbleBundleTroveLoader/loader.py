@@ -83,10 +83,10 @@ for chunk in range(CHUNKS_COUNT):
     logger.debug(f"Requesting data of page {chunk + 1} of {CHUNKS_COUNT}.")
     response = requests.request(
         method='GET',
-        url=URL_TROVE,
+        url=URL_INFO_CHUNKS.format(chunk=chunk),
         cookies=COOKIE_JAR
     )
-    chunk_data = json.loads(json_script_tag_trove_data_string)
+    chunk_data = response.json()
     GAME_DATA.extend(chunk_data.get('standardProducts', []))
 # end for
 
