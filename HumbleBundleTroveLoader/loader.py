@@ -211,14 +211,16 @@ for i, url_data in enumerate(DOWNLOADS):
     )
     json_signature = signature.json()
     url = json_signature[DOWNLOAD_URL_TYPE_TO_SIGNATURE_TYPE_MAP[url_data.type]]
-    logger.info(f'{part}: Downloading {url_data.file!r} from signed url {url!r}, size reported by trove: {human_size(url_data.size)}')
+    file_size = url_data.size
+    logger.info(f'{part}: Downloading {url_data.file!r} from signed url {url!r}, size reported by trove: {human_size(file_size)}')
     with requests.get(url, stream=True) as r:
-        logger.debug(f'{part}: Downloading {url_data.file!r} from signed url {url!r}: {r}')
-        logger.info(f"{part}: Download size reported by server: {human_size(r.headers.get('content-length'))}")
+        logger.debug(f'{part}: Response: {r}')
+        file_size = int(r.headers.get('content-length', str(file_size)))
+        logger.info(f"{part}: Download size reported by server: {human_size(file_size)}")
         prefix = f"{part}: DOWNLOAD {part}"
         callback = create_advanced_copy_progress(prefix=prefix, width=None, use_color=True)
         with open(url_data.file, 'wb') as f:
-            copyfileobj(r.raw, f, callback=callback, total=url_data.size, length=DOWNLOAD_CHUNK_SIZE)
+            copyfileobj(r.raw, f, callback=callback, total=file_size, length=DOWNLOAD_CHUNK_SIZE)
         # end with
         callback(url_data.size, DOWNLOAD_CHUNK_SIZE, url_data.size)  # enforce 100%
         print()  # enforce linebreak
