@@ -25,6 +25,9 @@ DOWNLOAD_URL_TYPE_TO_SIGNATURE_TYPE_MAP = {
     'bittorrent': 'signed_torrent_url',
 }
 
+HASH_CHUNK_SIZE = 4 * 1024
+DOWNLOAD_CHUNK_SIZE = 16 * 1024
+
 
 class URLData(object):
     url: str
@@ -151,16 +154,15 @@ for i, url_data in enumerate(DOWNLOADS):
             hash_md5 = hashlib.md5()
             hash_sha1 = hashlib.sha1()
             callback = create_advanced_copy_progress(prefix="HASH ", width=None, use_color=True)
-            chunk_size = 4096
             already_copied = 0
             with open(url_data.file, "rb") as f:
-                for chunk in iter(lambda: f.read(chunk_size), b""):
-                    callback(already_copied, chunk_size, disk_size)
+                for chunk in iter(lambda: f.read(HASH_CHUNK_SIZE), b""):
+                    callback(already_copied, HASH_CHUNK_SIZE, disk_size)
                     hash_md5.update(chunk)
                     hash_sha1.update(chunk)
-                    already_copied += chunk_size
+                    already_copied += HASH_CHUNK_SIZE
                 # end for
-                callback(disk_size, chunk_size, disk_size)  # enforce 100%
+                callback(disk_size, HASH_CHUNK_SIZE, disk_size)  # enforce 100%
                 print()  # enforce linebreak
             # end with
             md5 = hash_md5.hexdigest()
@@ -202,14 +204,13 @@ for i, url_data in enumerate(DOWNLOADS):
     json_signature = signature.json()
     url = json_signature[DOWNLOAD_URL_TYPE_TO_SIGNATURE_TYPE_MAP[url_data.type]]
     logger.info(f'Downloading {url_data.file!r} from signed url {url!r}')
-    chunk_size = 16*1024
     with requests.get(url, stream=True) as r:
         logger.debug(f'Downloading {url_data.file!r} from signed url {url!r}: {r}')
         callback = create_advanced_copy_progress(prefix="DOWNLOAD ", width=None, use_color=True)
         with open(url_data.file, 'wb') as f:
-            copyfileobj(r.raw, f, callback=callback, total=url_data.size, length=chunk_size)
+            copyfileobj(r.raw, f, callback=callback, total=url_data.size, length=DOWNLOAD_CHUNK_SIZE)
         # end with
-        callback(url_data.size, chunk_size, url_data.size)  # enforce 100%
+        callback(url_data.size, DOWNLOAD_CHUNK_SIZE, url_data.size)  # enforce 100%
         print()  # enforce linebreak
     # end with
     logger.success(f'Downloaded {url_data.file!r}.')
