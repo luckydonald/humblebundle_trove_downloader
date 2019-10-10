@@ -1,16 +1,14 @@
-import hashlib
-from typing import List
-
 import requests
-import shutil
+import hashlib
 import json
 from os import path
 from bs4 import BeautifulSoup
-
-from progress_bar import copyfileobj, create_advanced_copy_progress
+from typing import List
 from settings import DOWNLOAD_DIR, COOKIE_JAR
-from luckydonaldUtils.files.basics import mkdir_p
+from file_size import human_size
+from progress_bar import copyfileobj, create_advanced_copy_progress
 from luckydonaldUtils.logger import logging
+from luckydonaldUtils.files.basics import mkdir_p
 
 logger = logging.getLogger(__name__)
 logging.add_colored_handler(level=logging.DEBUG)
@@ -34,11 +32,12 @@ class URLData(object):
     auth_request: dict
     file: str
     type: str
-    size: str
+    size: int
     md5: str
     sha1: str
 
-    def __init__(self, url, auth_request, file, type, size, md5, sha1) -> None:
+    # noinspection PyShadowingNames
+    def __init__(self, url: str, auth_request: dict, file: str, type: str, size: int, md5: str, sha1: str) -> None:
         self.url = url
         self.auth_request = auth_request
         self.file = file
@@ -206,9 +205,10 @@ for i, url_data in enumerate(DOWNLOADS):
     )
     json_signature = signature.json()
     url = json_signature[DOWNLOAD_URL_TYPE_TO_SIGNATURE_TYPE_MAP[url_data.type]]
-    logger.info(f'{part}: Downloading {url_data.file!r} from signed url {url!r}')
+    logger.info(f'{part}: Downloading {url_data.file!r} from signed url {url!r}, size reported by trove: {human_size(url_data.size)}')
     with requests.get(url, stream=True) as r:
         logger.debug(f'{part}: Downloading {url_data.file!r} from signed url {url!r}: {r}')
+        logger.info(f"{part}: Download size reported by server: {human_size(r.headers.get('content-length').size)}")
         prefix = f"{part}: DOWNLOAD {part}"
         callback = create_advanced_copy_progress(prefix=prefix, width=None, use_color=True)
         with open(url_data.file, 'wb') as f:
