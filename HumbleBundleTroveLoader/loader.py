@@ -110,10 +110,8 @@ for i, url_data in enumerate(DOWNLOADS):
     logger.info(f'Downloading {url_data.file!r} from {url_data.url!r}')
     # check if file already exists.
     if path.exists(url_data.file):
-        logger.debug(f'File {url_data.file!r} already exists. Checking size.')
-
+        logger.debug(f'File {url_data.file!r} already exists.')
         needs_download = False
-
         if url_data.type != 'web':
             logger.info(
                 f"Could not checking size, md5 or sha1 for file {url_data.file!r} as it is not the main 'web' file, "
@@ -122,6 +120,7 @@ for i, url_data in enumerate(DOWNLOADS):
             needs_download = None
         else:
             # check file size
+            logger.debug(f'File {url_data.file!r} already exists. Checking size.')
             disk_size = path.getsize(url_data.file)
             if disk_size != url_data.size:
                 logger.warning(f'Existing file {url_data.file!r} has wrong filesize. Disk is {disk_size}, online is {url_data.size}.')
@@ -129,6 +128,7 @@ for i, url_data in enumerate(DOWNLOADS):
             # end if
 
             # check md5 and sha1 hash
+            logger.debug(f'File {url_data.file!r} already exists. Checking file hashes.')
             hash_md5 = hashlib.md5()
             hash_sha1 = hashlib.sha1()
             with open(url_data.file, "rb") as f:
@@ -149,7 +149,7 @@ for i, url_data in enumerate(DOWNLOADS):
                 logger.warning(f'Existing file {url_data.file!r} has no sha1 hashsum. Disk is {sha1}.')
             elif sha1 != url_data.sha1:
                 logger.warning(f'Existing file {url_data.file!r} has wrong sha1 hashsum. Disk is {sha1}, online is {url_data.sha1}.')
-                # needs_download = True
+                # needs_download = True  # this seems to be unreliable.
             # end if
         # end if
         if needs_download is None:
