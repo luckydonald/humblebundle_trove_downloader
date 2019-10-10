@@ -183,10 +183,10 @@ for i, url_data in enumerate(DOWNLOADS):
             # end if
         # end if
         if needs_download is None:
-            logger.success(f'{part}: Existing file {url_data.file!r} was found.')
+            logger.success(f'{part}: File {url_data.file!r} was found. Skipping download.')
             continue
         elif not needs_download:
-            logger.success(f'{part}: Existing file {url_data.file!r} has correct metadata.')
+            logger.success(f'{part}: Existing file {url_data.file!r} has correct metadata. Skipping download.')
             continue
         else:
             logger.warning(f'{part}: Will download again.')
