@@ -156,7 +156,7 @@ for i, url_data in enumerate(DOWNLOADS):
             if disk_size == url_data.size:
                 logger.debug(f'{part}: File {url_data.file!r} already exists. Checking size.')
                 downloaded_size += url_data.size
-            else :
+            else:
                 logger.warning(f'Existing file {url_data.file!r} has wrong filesize. Disk is {disk_size!r}, online is {url_data.size!r}.')
                 needs_download = True
             # end if
@@ -214,9 +214,11 @@ for i, url_data in enumerate(DOWNLOADS):
         # end if
         if needs_download is None:
             logger.success(f'{part}: File {url_data.file!r} was found. Could be correct. Skipping download.')
+            logger.success(f'{part}: Overall download progress: {human_size(downloaded_size)} of {human_size(DOWNLOAD_TOTAL_SIZE)}')
             continue
         elif not needs_download:
             logger.success(f'{part}: Existing file {url_data.file!r} has correct metadata. Skipping download.')
+            logger.success(f'{part}: Overall download progress: {human_size(downloaded_size)} of {human_size(DOWNLOAD_TOTAL_SIZE)}')
             continue
         else:
             logger.warning(f'{part}: Will download again.')
