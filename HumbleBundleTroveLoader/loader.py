@@ -37,10 +37,6 @@ response = requests.request(
     cookies=COOKIE_JAR
 )
 
-with open("/tmp/trove.html", "wb") as f:
-    f.write(response.content)
-# end if
-
 # parse page
 soup = BeautifulSoup(response.content, features="html.parser")
 json_script_tag_trove_data_element = soup.find('script', id='webpack-monthly-trove-data')
@@ -170,7 +166,7 @@ for i, game_data in enumerate(GAME_DATA):
 logger.info(f'---> Total storage needed: {human_size(DOWNLOAD_TOTAL_SIZE)}')
 
 
-if do_download_games:  # TODO: add skip mechanism
+if do_download_games:
     DOWNLOADS_COUNT = len(DOWNLOADS)
     DOWNLOADS_COUNT_LEN = len(str(DOWNLOADS_COUNT))
     url_data: URLData
@@ -314,6 +310,15 @@ if do_download_images:
 
 
 if do_generate_html:
+    part = f"<{'':->{GAMES_COUNT_LEN}}/{'':->{GAMES_COUNT_LEN}}>"
+    template = get_template('./overview.html.template')
+    template_txt = template.render(games=GAMES)
+    html_path = path.join(DOWNLOAD_DIR, 'overview.html')
+    with open(html_path, "w") as f:
+        f.write(template_txt)
+    # end with
+    logger.success(f'{part}: Written overview to {html_path!r}')
+
     for i, game in enumerate(GAMES):
         part = f"<{i + 1:0>{GAMES_COUNT_LEN}}/{GAMES_COUNT}>"
 

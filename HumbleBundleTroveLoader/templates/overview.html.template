@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+{% set games=[{
+    'background_image': None,
+    'publishers': None,
+    'date_added': 1568394000,
+    'machine_name': 'shadyknight_trove',
+    'humble_original': True,
+    'downloads': {
+        'windows': {
+            'sha1': '7464305799c6818c715cc9fae203dda0fcb3d02e',
+            'uploaded_at': 1568238065,
+            'name': 'Download',
+            'url': {
+                'web': 'shadynight_v1.01.zip',
+                'bittorrent': 'shadynight_v1.01.zip.torrent'
+            },
+            'machine_name': 'shadyknight_windows',
+            'file_size': 62303303,
+            'small': 0,
+            'md5': '98f47d81d57d11e509dfe917f72244a4',
+            'size': '59.4 MB',
+        }
+    },
+    'popularity': 6585,
+    'trove_showcase_css': None,
+    'youtube_link': None,
+    'all_access': False,
+    'carousel_content': {
+        'youtube_link': ['Vm7lAPxfKtk'],
+        'thumbnail': ['https://hb.imgix.net/3927c6619a233a6bda9aeadb5c61e62c983c2b4c.png?auto=compress,format&fit=crop&h=59&w=105', 'https://hb.imgix.net/79d25d2f28cb310ad91b91e282373622f5124fb2.png?auto=compress,format&fit=crop&h=59&w=105', 'https://hb.imgix.net/35784a575c11c89257d2f34320e649b9abe09fae.png?auto=compress,format&fit=crop&h=59&w=105', 'https://hb.imgix.net/9b05858d302a3bf8dde907a4fc29eea1bc318845.png?auto=compress,format&fit=crop&h=59&w=105'],
+        'screenshot': ['https://hb.imgix.net/3927c6619a233a6bda9aeadb5c61e62c983c2b4c.png?auto=compress,format&fit=crop&h=314&w=570', 'https://hb.imgix.net/79d25d2f28cb310ad91b91e282373622f5124fb2.png?auto=compress,format&fit=crop&h=314&w=570', 'https://hb.imgix.net/35784a575c11c89257d2f34320e649b9abe09fae.png?auto=compress,format&fit=crop&h=314&w=570', 'https://hb.imgix.net/9b05858d302a3bf8dde907a4fc29eea1bc318845.png?auto=compress,format&fit=crop&h=314&w=570']
+    },
+    'human_name': 'Shady Knight',
+    'logo': None,
+    'description_text': '<p><em>Shady Knight</em> is a first-person minimalistic slasher focused on dynamic interactive fights and fluid platforming. Each level is a challenging tower where your goal is to climb to the top while dealing with a range of deadly foes. Master your powerful moveset to raid those castles fast in a dance of death. You can kick your enemies into the ocean, slash in half, pin them to the wall by an arrow or kill with a simple wooden chair.</p>',
+    'marketing_blurb':  '<p><em>Shady Knight</em> is a first-person minimalistic slasher focused on dynamic interactive fights and fluid platforming. Each level is a challenging tower where your goal is to climb to the top while dealing with a range of deadly foes. Master your powerful moveset to raid those castles fast in a dance of death. You can kick your enemies into the ocean, slash in half, pin them to the wall by an arrow or kill with a simple wooden chair.</p>',
+    'developers': [{'developer-name': 'Alexey Sigh', 'developer-url': 'https://cptnsigh.itch.io/shady-knight'}],
+    'image': 'https://hb.imgix.net/41d1b831898fe49f83c1d006c882bc25fe85083e.png?auto=compress,format&fit=crop&h=353&w=616',
+    'background_color': None,
+}] %}
+<html>
+    <head>
+        <title>Overview</title>
+    </head>
+    <body>
+        <h1>Overview</h1>
+        <ul>
+            {% for game in games %}
+            <li>
+                <b><a href="{{ game.folder }}">{{ game.title }}</a></b>
+                {% if game.logo %}<img src="{{ game.folder_data }}logo.png" style="max-width: 100px; max-height: 100px;" />
+                {% elif game.image %}<img src="{{ game.folder_data }}logo.png" style="max-width: 100px; max-height: 100px;" />
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+
+        <br>
+
+        <pre>
+            [{% for game in games %}
+                {{ game | tojson }}{% if not loop.last %},{% endif %}
+            {% endfor %}]
+        </pre>
+    </body>
+</html>
