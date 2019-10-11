@@ -124,12 +124,13 @@ for i, game_data in enumerate(GAME_DATA):
             }
             if download_type == TYPE_WEB:
                 for meta_file in ('md5', 'sha1'):
-                    if meta_file not in download:
+                    value = getattr(download, meta_file)
+                    if value is None:
                         continue
                     # end if
                     meta_file_path = download_file_path + ".trove." + meta_file
                     with open(meta_file_path, 'w') as f:
-                        f.write(download[meta_file])
+                        f.write(value)
                     # end with
                 # end for
             # end if
