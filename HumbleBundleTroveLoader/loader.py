@@ -5,9 +5,9 @@ import hashlib
 import json
 from os import path
 from bs4 import BeautifulSoup
-from classes import URLData, CarouselContent, Game, Developer, Download, URLs
 from save import download_file, sanitize_name
 from typing import List
+from classes import URLData, CarouselContent, Game, Developer, Download, URLs, Publisher
 from settings import DOWNLOAD_DIR, COOKIE_JAR
 from file_size import human_size
 from templater import get_template
@@ -68,7 +68,10 @@ for i, game_data in enumerate(GAME_DATA):
     logger.debug(f'{part}: Parsing json: {game_data!r}')
     game = Game(
         background_image=game_data['background-image'],
-        publishers=game_data['publishers'],
+        publishers=[
+            Publisher(name=pub['publisher-name'], url=pub.get('publisher-url'))
+            for pub in game_data['publishers']
+        ],
         date_added=game_data['date-added'],
         machine_name=game_data['machine_name'],
         humble_original=game_data['humble-original'],

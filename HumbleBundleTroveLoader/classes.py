@@ -93,6 +93,24 @@ class Developer(object):
 # end class
 
 
+class Publisher(object):
+    name: str
+    url: Union[None, str]
+
+    def __init__(self, name, url):
+        self.name = name
+        self.url = url
+    # end if
+
+    def to_json(self):
+        return {
+            "name": self.name,
+            "url": self.url,
+        }
+    # end def
+# end class
+
+
 class Download(object):
     name: str
     machine_name: str
