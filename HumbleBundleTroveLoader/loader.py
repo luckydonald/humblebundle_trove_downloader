@@ -84,7 +84,7 @@ for i, game_data in enumerate(GAME_DATA):
                 md5=dl['md5'],
                 sha1=dl.get('sha1'),
                 file_size=dl['file_size'],
-                human_size=dl['human_size'],
+                human_size=dl['size'],
                 uploaded_at=dl['uploaded_at'],
             )
             for k, dl in game_data['downloads'].items()
