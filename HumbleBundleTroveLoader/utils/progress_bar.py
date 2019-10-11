@@ -160,9 +160,19 @@ def build_process_label(percent: float, decimals: int = 2) -> str:
 def build_progress_line(
     percent: float,
     width: Union[None, int] = None,
-    decimals: int = 2,
+    decimals: [None, int] = None,
     use_color: bool = False
 ) -> str:
+    if decimals is None:
+        # automatically decide.
+        if width > 12:
+            decimals = 2
+        elif width > 11:
+            decimals = 1
+        else:
+            decimals = 0
+        # end if
+    # end if
     label = build_process_label(percent, decimals)
     remaining_width = width - len(label)
     if remaining_width > 5:
