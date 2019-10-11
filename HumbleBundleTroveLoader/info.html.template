@@ -27,10 +27,13 @@
         <title>{{ game.human_name }}</title>
     </head>
     <body>
-        {% if game.logo %}<img href="logo.png" />{% endif %}
         <h1>{{ game.human_name }}</h1>
-        {{ game.description_text | safe }}
+        {% for dev in developers %}{% if loop.first %}<div>Developed by{% endif %}<a href="{{ dev.url }}">{{ dev.name }}</a>{% if not loop.last %}, {% else %}</div>{% endif %}{% endfor %}
+        {% if game.logo %}<img href="logo.png" />{% endif %}
         {% if game.image %}<img href="image.png" />{% endif %}
+        <div class="description">
+            {{ game.description_text | safe }}
+        </div>
         <h3>Screenshots</h3>
         {% for youtube_id in game.carousel_content and game.carousel_content.youtube_link %}
             <iframe allowFullScreen="allowFullScreen" src="https://www.youtube.com/embed/{{youtube_id}}?ecver=1&egm=1&iv_load_policy=3&rel=0&showinfo=0&yt:stretch=16:9&autohide=1&color=white" width="560" height="315" allowtransparency="true" frameborder="0"></iframe><br />
