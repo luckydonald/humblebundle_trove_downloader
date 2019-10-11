@@ -83,7 +83,7 @@ for i, game in enumerate(GAME_DATA):
                 if meta_file not in download_meta:
                     continue
                 # end if
-                meta_file_path = download_path + "." + meta_file
+                meta_file_path = download_file_path + ".trove." + meta_file
                 with open(meta_file_path, 'w') as f:
                     f.write(download_meta[meta_file])
                 # end with
