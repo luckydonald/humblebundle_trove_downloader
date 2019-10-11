@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% set games=[{
+{% set _games=[{
     'background_image': None,
     'publishers': None,
     'date_added': 1568394000,
@@ -49,7 +49,7 @@
             <li>
                 <b><a href="{{ game.folder }}">{{ game.title }}</a></b>
                 {% if game.logo %}<img src="{{ game.folder_data }}logo.png" style="max-width: 100px; max-height: 100px;" />
-                {% elif game.image %}<img src="{{ game.folder_data }}logo.png" style="max-width: 100px; max-height: 100px;" />
+                {% elif game.image %}<img src="{{ game.folder_data }}image.png" style="max-width: 100px; max-height: 100px;" />
                 {% endif %}
             </li>
             {% endfor %}
