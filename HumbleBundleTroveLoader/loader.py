@@ -202,11 +202,11 @@ for i, url_data in enumerate(DOWNLOADS):
         # end if
         if needs_download is None:
             logger.success(f'{part}: File {url_data.file!r} was found. Could be correct. Skipping download.')
-            logger.success(f'{part}: Overall discovery progress: {human_size(downloaded_size)} of {human_size(DOWNLOAD_TOTAL_SIZE)}')
+            logger.success(f'{part}: Overall discovery progress: {human_size(downloaded_size)} ({downloaded_size}) of {human_size(DOWNLOAD_TOTAL_SIZE)} ({DOWNLOAD_TOTAL_SIZE}).')
             continue
         elif not needs_download:
             logger.success(f'{part}: Existing file {url_data.file!r} has correct metadata. Skipping download.')
-            logger.success(f'{part}: Overall discovery progress: {human_size(downloaded_size)} of {human_size(DOWNLOAD_TOTAL_SIZE)}')
+            logger.success(f'{part}: Overall discovery progress: {human_size(downloaded_size)} ({downloaded_size}) of {human_size(DOWNLOAD_TOTAL_SIZE)} ({DOWNLOAD_TOTAL_SIZE}).')
             continue
         else:
             logger.warning(f'{part}: Will download again.')
