@@ -2,3 +2,4 @@ requests
 bs4
 luckydonald-utils
 torrent_parser
+jinja2

@@ -8,6 +8,7 @@ from save import download_file
 from typing import List, Union
 from settings import DOWNLOAD_DIR, COOKIE_JAR
 from file_size import human_size
+from templater import get_template
 from constants import URL_TROVE, URL_DL_SIGN, URL_DOWNLOADS, URL_INFO_CHUNKS, TYPE_WEB
 from constants import TYPE_BITTORRENT, DOWNLOAD_URL_TYPE_TO_SIGNATURE_TYPE_MAP, HASH_CHUNK_SIZE, DOWNLOAD_CHUNK_SIZE
 from progress_bar import copyfileobj, create_advanced_copy_progress
@@ -230,3 +231,119 @@ for i, url_data in enumerate(DOWNLOADS):
     logger.success(f'{part}: Overall download progress: {human_size(downloaded_size)} ({downloaded_size}) of {human_size(DOWNLOAD_TOTAL_SIZE)} ({DOWNLOAD_TOTAL_SIZE}).')
 # end for
 
+
+class CarouselContent(object):
+    youtube_link: List[str]
+    thumbnail: List[str]
+    screenshot: List[str]
+
+    def __init__(
+        self,
+        youtube_link: List[str],
+        thumbnail: List[str],
+        screenshot: List[str],
+    ):
+        self.youtube_link = youtube_link
+        self.thumbnail = thumbnail
+        self.screenshot = screenshot
+    # end def
+# end class
+
+
+class Game(object):
+    background_image: Union[None, str]
+    publishers: Union[None, dict]
+    date_added: Union[None, int]
+    machine_name: Union[None, str]
+    humble_original: Union[None, bool]
+    downloads: Union[None, dict]
+    popularity: Union[None, int]
+    trove_showcase_css: Union[None, str]
+    youtube_link: Union[None, str]
+    all_access: Union[None, int]
+    carousel_content: CarouselContent
+    human_name: str
+    logo: Union[None, str]
+    description_text: Union[None, str]
+    developers: Union[None, str]
+    image: Union[None, str]
+    background_color: Union[None, str]
+    marketing_blurb: Union[None, str]
+
+    def __init__(
+        self,
+        background_image, publishers, date_added, machine_name, humble_original, downloads, popularity,
+        trove_showcase_css, youtube_link, all_access, carousel_content, human_name, logo, description_text,
+        developers, image, background_color, marketing_blurb
+    ):
+        self.background_image = background_image
+        self.publishers = publishers
+        self.date_added = date_added
+        self.machine_name = machine_name
+        self.humble_original = humble_original
+        self.downloads = downloads
+        self.popularity = popularity
+        self.trove_showcase_css = trove_showcase_css
+        self.youtube_link = youtube_link
+        self.all_access = all_access
+        self.carousel_content = carousel_content
+        self.human_name = human_name
+        self.logo = logo
+        self.description_text = description_text
+        self.developers = developers
+        self.image = image
+        self.background_color = background_color
+        self.marketing_blurb = marketing_blurb
+    # end def
+# end class
+
+
+for game_data in GAME_DATA:
+    part = f"<{i + 1:0>{GAMES_COUNT_LEN}}/{GAMES_COUNT}>"
+    game = Game(
+        background_image = game_data['background-image'],
+        publishers = game_data['publishers'],
+        date_added = game_data['date-added'],
+        machine_name = game_data['machine_name'],
+        humble_original = game_data['humble-original'],
+        downloads = game_data['downloads'],
+        popularity = game_data['popularity'],
+        trove_showcase_css = game_data['trove-showcase-css'],
+        youtube_link = game_data['youtube-link'],
+        all_access = game_data['all-access'],
+        carousel_content=CarouselContent(
+            youtube_link=game_data['carousel-content']['youtube-link'],
+            thumbnail=game_data['carousel-content']['thumbnail'],
+            screenshot=game_data['carousel-content']['screenshot'],
+        ),
+        human_name = game_data['human-name'],
+        logo = game_data['logo'],
+        description_text = game_data['description-text'],
+        developers = game_data['developers'],
+        image = game_data['image'],
+        background_color = game_data['background-color'],
+        marketing_blurb = game_data['marketing-blurb'],
+    )
+
+    game_path = path.join(DOWNLOAD_DIR, game.human_name.replace(':', ' - ').replace('/', ':'))
+    # noinspection PyTypeChecker
+    html_path = path.join(game_path, 'index.html')
+    # noinspection PyTypeChecker
+    files_path = path.join(game_path, 'data/')
+
+    if game.logo:
+        download_file(game.logo, path.join(files_path, 'logo.png'))
+    # end if
+    if game.image:
+        download_file(game.image, path.join(files_path, 'image.png'))
+    # end if
+    for i, screenshot in enumerate(game.carousel_content.screenshot):
+        download_file(screenshot, path.join(files_path, f'screenshot_{i}.png'))
+    # end if
+    template = get_template('./info.html.template')
+    template_txt = template.render(game=game)
+    with open(html_path, "w") as f:
+        f.write(template_txt)
+    # end with
+    logger.success(f'{part}: Written info to {html_path!r}')
+# end for
