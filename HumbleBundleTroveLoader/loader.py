@@ -214,28 +214,31 @@ for i, url_data in enumerate(DOWNLOADS):
 for i, game_data in enumerate(GAME_DATA):
     part = f"<{i + 1:0>{GAMES_COUNT_LEN}}/{GAMES_COUNT}>"
     game = Game(
-        background_image = game_data['background-image'],
-        publishers = game_data['publishers'],
-        date_added = game_data['date-added'],
-        machine_name = game_data['machine_name'],
-        humble_original = game_data['humble-original'],
-        downloads = game_data['downloads'],
-        popularity = game_data['popularity'],
-        trove_showcase_css = game_data['trove-showcase-css'],
-        youtube_link = game_data['youtube-link'],
-        all_access = game_data['all-access'],
+        background_image=game_data['background-image'],
+        publishers=game_data['publishers'],
+        date_added=game_data['date-added'],
+        machine_name=game_data['machine_name'],
+        humble_original=game_data['humble-original'],
+        downloads=game_data['downloads'],
+        popularity=game_data['popularity'],
+        trove_showcase_css=game_data['trove-showcase-css'],
+        youtube_link=game_data['youtube-link'],
+        all_access=game_data['all-access'],
         carousel_content=CarouselContent(
             youtube_link=game_data['carousel-content']['youtube-link'],
             thumbnail=game_data['carousel-content']['thumbnail'],
             screenshot=game_data['carousel-content']['screenshot'],
         ),
-        human_name = game_data['human-name'],
-        logo = game_data['logo'],
-        description_text = game_data['description-text'],
-        developers = game_data['developers'],
-        image = game_data['image'],
-        background_color = game_data['background-color'],
-        marketing_blurb = game_data['marketing-blurb'],
+        human_name=game_data['human-name'],
+        logo=game_data['logo'],
+        description_text=game_data['description-text'],
+        developers=[
+            Developer(developer_name=dev['developer-name'], developer_url=dev['developer-url'])
+            for dev in game_data['developers']
+        ],
+        image=game_data['image'],
+        background_color=game_data['background-color'],
+        marketing_blurb=game_data['marketing-blurb'],
     )
 
     game_path = path.join(DOWNLOAD_DIR, game.human_name.replace(': ', ' — ').replace(':', ' — ').replace('/', ':'))
