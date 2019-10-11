@@ -4,6 +4,7 @@ import hashlib
 import json
 from os import path
 from bs4 import BeautifulSoup
+from save import download_file
 from typing import List, Union
 from settings import DOWNLOAD_DIR, COOKIE_JAR
 from file_size import human_size
@@ -225,21 +226,7 @@ for i, url_data in enumerate(DOWNLOADS):
     url = json_signature[DOWNLOAD_URL_TYPE_TO_SIGNATURE_TYPE_MAP[url_data.type]]
     file_size = int(url_data.size) if isinstance(url_data.size, str) else url_data.size
     logger.info(f'{part}: Downloading {url_data.file!r} from signed url {url!r}, size reported by trove: {human_size(file_size)!r}')
-    with requests.get(url, stream=True) as resp:
-        logger.debug(f'{part}: Response: {resp}')
-        dl_file_size = resp.headers.get('content-length', None)
-        dl_file_size = int(dl_file_size) if dl_file_size is not None else None
-        file_size = dl_file_size if dl_file_size is not None else file_size
-        logger.info(f"{part}: Download size reported by server: {human_size(dl_file_size)!r}")
-        prefix = f"{part}: DOWNLOAD "
-        callback = create_advanced_copy_progress(prefix=prefix, width=None, use_color=True)
-        with open(url_data.file, 'wb') as f:
-            copyfileobj(resp.raw, f, callback=callback, total=file_size, length=DOWNLOAD_CHUNK_SIZE)
-        # end with
-        callback(file_size, DOWNLOAD_CHUNK_SIZE, file_size)  # enforce 100%
-        print()  # enforce linebreak
-    # end with
-    logger.success(f'{part}: Downloaded {url_data.file!r}.')
-    logger.success(f'{part}: Overall download progress: {human_size(downloaded_size)} of {human_size(DOWNLOAD_TOTAL_SIZE)}')
+    download_file(url, url_data.file, log_prefix=f"{part}: ", progress_bar_prefix=f"{part} DOWNLOAD:", file_size=)
+    logger.success(f'{part}: Overall download progress: {human_size(downloaded_size)} ({downloaded_size}) of {human_size(DOWNLOAD_TOTAL_SIZE)} ({DOWNLOAD_TOTAL_SIZE}).')
 # end for
 
