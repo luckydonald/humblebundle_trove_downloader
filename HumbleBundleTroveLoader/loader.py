@@ -286,13 +286,13 @@ if do_download_images:
         part = f"{{{i + 1:0>{GAMES_COUNT_LEN}}/{GAMES_COUNT}}}"
         if game.logo:
             download_file(
-                game.logo, path.join(files_path, 'logo.png'),
+                game.logo, path.join(DOWNLOAD_DIR, game.folder_data, 'logo.png'),
                 log_prefix=f'{part} logo: ', progress_bar_prefix="LOGO: ",
             )
         # end if
         if game.image:
             download_file(
-                game.image, path.join(files_path, 'image.png'),
+                game.image, path.join(DOWNLOAD_DIR, game.folder_data, 'image.png'),
                 log_prefix=f'{part} image: ', progress_bar_prefix="IMG: ",
             )
         # end if
@@ -301,7 +301,7 @@ if do_download_images:
         logger.debug(f'{part}: Found {screenshot_len} screenshots.')
         for i2, screenshot in enumerate(game.carousel_content.screenshot):
             download_file(
-                screenshot, path.join(files_path, f'screenshot_{i2}.png'),
+                screenshot, path.join(DOWNLOAD_DIR, game.folder_data, f'screenshot_{i2}.png'),
                 log_prefix=f'{part} screenshot ({i2 + 1:0>{screenshot_len}}/{screenshot_len}): ',
                 progress_bar_prefix=f"SCR{i2 + 1:0>{screenshot_len}}: ",
             )

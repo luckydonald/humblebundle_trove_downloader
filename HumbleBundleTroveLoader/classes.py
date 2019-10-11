@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from os import path
 from typing import Union, List, Dict, Tuple
-
-from luckydonaldUtils.logger import logging
-
 from constants import TYPE_WEB, TYPE_BITTORRENT
+from utils.save import sanitize_name
+from luckydonaldUtils.logger import logging
 
 __author__ = 'luckydonald'
 
@@ -261,5 +261,20 @@ class Game(object):
     @property
     def title(self):
         return self.human_name if self.human_name else self.machine_name
+    # end def
+
+    @property
+    def title_sanitized(self):
+        return sanitize_name(self.title)
+    # end def
+
+    @property
+    def folder(self):
+        return self.title_sanitized + path.sep
+    # end def
+
+    @property
+    def folder_data(self):
+        return path.join(self.folder, 'data') + path.sep
     # end def
 # end class
