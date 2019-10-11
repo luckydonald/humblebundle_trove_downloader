@@ -108,24 +108,23 @@ for i, game_data in enumerate(GAME_DATA):
     logger.debug(f'{part}: Found Game {game.title!r} with {len(game_data["downloads"])} downloads.')
     game_path = path.join(DOWNLOAD_DIR, sanitize_name(game.title))
     mkdir_p(game_path)
-    for platform, download_meta in game_data['downloads'].items():
+    for platform, download in game.downloads.items():
         download_path = path.join(game_path, sanitize_name(platform))
         mkdir_p(download_path)
-        for download_type, download in download_meta['url'].items():
-            download_file_name = sanitize_name(download)
-            download_file_path = path.join(download_path, download_file_name)
+        for download_type, download_filename in download.url.items():
+            download_file_path = path.join(download_path, sanitize_name(download_filename))
             auth_request_data = {
-                "machine_name": download_meta['machine_name'],
-                "filename": download
+                "machine_name": download.machine_name,
+                "filename": download_filename
             }
             if download_type == TYPE_WEB:
                 for meta_file in ('md5', 'sha1'):
-                    if meta_file not in download_meta:
+                    if meta_file not in download:
                         continue
                     # end if
                     meta_file_path = download_file_path + ".trove." + meta_file
                     with open(meta_file_path, 'w') as f:
-                        f.write(download_meta[meta_file])
+                        f.write(download[meta_file])
                     # end with
                 # end for
             # end if
@@ -134,12 +133,14 @@ for i, game_data in enumerate(GAME_DATA):
                 auth_request=auth_request_data,
                 file=download_file_path,
                 type=download_type,
-                size=download_meta.get('file_size', None) if download_type == TYPE_WEB else None,  # only the actual file.
-                md5=download_meta.get('md5', None) if download_type == TYPE_WEB else None,  # only the actual file.
-                sha1=download_meta.get('sha1', None) if download_type == TYPE_WEB else None,  # only the actual file.
+                size=download.file_size if download_type == TYPE_WEB else None,  # only the actual file.
+                md5=download.md5 if download_type == TYPE_WEB else None,  # only the actual file.
+                sha1=download.sha1 if download_type == TYPE_WEB else None,  # only the actual file.
             ))
         # end for
-        DOWNLOAD_TOTAL_SIZE += download_meta.get('file_size', 0)
+        if download.file_size:
+            DOWNLOAD_TOTAL_SIZE += download.file_size
+        # end if
     # end for
     with open(path.join(game_path, 'info.json'), 'w') as f:
         json.dump(game, f, indent=2, sort_keys=True)
