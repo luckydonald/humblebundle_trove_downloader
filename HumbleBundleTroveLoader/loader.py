@@ -61,12 +61,9 @@ for chunk in range(CHUNKS_COUNT + 1):
     GAME_DATA.extend(chunk_data)
 # end for
 
-
 GAMES = []
 GAMES_COUNT = len(GAME_DATA)
 GAMES_COUNT_LEN = len(str(GAMES_COUNT))
-DOWNLOAD_TOTAL_SIZE = 0
-DOWNLOADS: List[URLData] = []  # file: url
 for i, game_data in enumerate(GAME_DATA):
     part = f"<{i + 1:0>{GAMES_COUNT_LEN}}/{GAMES_COUNT}>"
     logger.debug(f'{part}: Parsing json: {game_data!r}')
@@ -123,6 +120,19 @@ for i, game_data in enumerate(GAME_DATA):
         marketing_blurb=game_data['marketing-blurb'],
     )
     GAMES.append(game)
+# end for
+
+GAMES_BY_ID = {  # cheap way to remove duplicates
+    game.machine_name: game for game in GAMES
+}
+GAMES = GAMES_BY_ID.values()
+
+GAMES_COUNT = len(GAMES)
+GAMES_COUNT_LEN = len(str(GAMES_COUNT))
+DOWNLOAD_TOTAL_SIZE = 0
+DOWNLOADS: List[URLData] = []  # file: url
+
+for i, game in enumerate(GAMES):
     logger.debug(f'{part}: Found Game {game.title!r} with {len(game_data["downloads"])} downloads.')
     game_path = path.join(DOWNLOAD_DIR, sanitize_name(game.title))
     mkdir_p(game_path)
@@ -165,11 +175,6 @@ for i, game_data in enumerate(GAME_DATA):
         json.dump(game, f, indent=2, sort_keys=True)
     # end with
 # end for
-
-GAMES_BY_ID = {  # cheap way to remove duplicates
-    game.machine_name: game for game in GAMES
-}
-GAMES = GAMES_BY_ID.values()
 
 logger.info(f'---> Total storage needed: {human_size(DOWNLOAD_TOTAL_SIZE)}')
 
