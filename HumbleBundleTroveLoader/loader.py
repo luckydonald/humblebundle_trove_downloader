@@ -165,6 +165,11 @@ for i, game_data in enumerate(GAME_DATA):
     # end with
 # end for
 
+GAMES_BY_ID = {  # cheap way to remove duplicates
+    game.machine_name: game for game in GAMES
+}
+GAMES = GAMES_BY_ID.items()
+
 logger.info(f'---> Total storage needed: {human_size(DOWNLOAD_TOTAL_SIZE)}')
 
 
