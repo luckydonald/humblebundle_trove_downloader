@@ -54,12 +54,12 @@ class CarouselContent(object):
 
 
 class Developer(object):
-    developer_name: str
-    developer_url: str
+    name: str
+    url: str
 
-    def __init__(self, developer_name, developer_url):
-        self.developer_name = developer_name
-        self.developer_url = developer_url
+    def __init__(self, name, url):
+        self.name = name
+        self.url = url
     # end if
 # end class
 

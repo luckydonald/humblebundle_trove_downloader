@@ -233,7 +233,7 @@ for i, game_data in enumerate(GAME_DATA):
         logo=game_data['logo'],
         description_text=game_data['description-text'],
         developers=[
-            Developer(developer_name=dev['developer-name'], developer_url=dev['developer-url'])
+            Developer(name=dev['developer-name'], url=dev['developer-url'])
             for dev in game_data['developers']
         ],
         image=game_data['image'],
