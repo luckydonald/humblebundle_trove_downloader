@@ -4,43 +4,22 @@ import hashlib
 import json
 from os import path
 from bs4 import BeautifulSoup
+
+from classes import URLData, CarouselContent, Game, Developer
 from save import download_file
-from typing import List, Union
+from typing import List
 from settings import DOWNLOAD_DIR, COOKIE_JAR
 from file_size import human_size
 from templater import get_template
 from constants import URL_TROVE, URL_DL_SIGN, URL_DOWNLOADS, URL_INFO_CHUNKS, TYPE_WEB
 from constants import TYPE_BITTORRENT, DOWNLOAD_URL_TYPE_TO_SIGNATURE_TYPE_MAP, HASH_CHUNK_SIZE, DOWNLOAD_CHUNK_SIZE
-from progress_bar import copyfileobj, create_advanced_copy_progress
+from progress_bar import create_advanced_copy_progress
 from luckydonaldUtils.logger import logging
 from luckydonaldUtils.files.basics import mkdir_p
 
 
 logger = logging.getLogger(__name__)
 logging.add_colored_handler(level=logging.DEBUG)
-
-
-class URLData(object):
-    url: str
-    auth_request: dict
-    file: str
-    type: str
-    size: Union[int, None]
-    md5: Union[str, None]
-    sha1: Union[str, None]
-
-    # noinspection PyShadowingNames
-    def __init__(self, url: str, auth_request: dict, file: str, type: str, size: int, md5: str, sha1: str) -> None:
-        self.url = url
-        self.auth_request = auth_request
-        self.file = file
-        self.type = type
-        self.size = size
-        self.md5 = md5
-        self.sha1 = sha1
-        super().__init__()
-    # end if
-# end class
 
 
 # now we can start.
@@ -232,73 +211,7 @@ for i, url_data in enumerate(DOWNLOADS):
 # end for
 
 
-class CarouselContent(object):
-    youtube_link: List[str]
-    thumbnail: List[str]
-    screenshot: List[str]
-
-    def __init__(
-        self,
-        youtube_link: List[str],
-        thumbnail: List[str],
-        screenshot: List[str],
-    ):
-        self.youtube_link = youtube_link
-        self.thumbnail = thumbnail
-        self.screenshot = screenshot
-    # end def
-# end class
-
-
-class Game(object):
-    background_image: Union[None, str]
-    publishers: Union[None, dict]
-    date_added: Union[None, int]
-    machine_name: Union[None, str]
-    humble_original: Union[None, bool]
-    downloads: Union[None, dict]
-    popularity: Union[None, int]
-    trove_showcase_css: Union[None, str]
-    youtube_link: Union[None, str]
-    all_access: Union[None, int]
-    carousel_content: CarouselContent
-    human_name: str
-    logo: Union[None, str]
-    description_text: Union[None, str]
-    developers: Union[None, str]
-    image: Union[None, str]
-    background_color: Union[None, str]
-    marketing_blurb: Union[None, str]
-
-    def __init__(
-        self,
-        background_image, publishers, date_added, machine_name, humble_original, downloads, popularity,
-        trove_showcase_css, youtube_link, all_access, carousel_content, human_name, logo, description_text,
-        developers, image, background_color, marketing_blurb
-    ):
-        self.background_image = background_image
-        self.publishers = publishers
-        self.date_added = date_added
-        self.machine_name = machine_name
-        self.humble_original = humble_original
-        self.downloads = downloads
-        self.popularity = popularity
-        self.trove_showcase_css = trove_showcase_css
-        self.youtube_link = youtube_link
-        self.all_access = all_access
-        self.carousel_content = carousel_content
-        self.human_name = human_name
-        self.logo = logo
-        self.description_text = description_text
-        self.developers = developers
-        self.image = image
-        self.background_color = background_color
-        self.marketing_blurb = marketing_blurb
-    # end def
-# end class
-
-
-for game_data in GAME_DATA:
+for i, game_data in enumerate(GAME_DATA):
     part = f"<{i + 1:0>{GAMES_COUNT_LEN}}/{GAMES_COUNT}>"
     game = Game(
         background_image = game_data['background-image'],
