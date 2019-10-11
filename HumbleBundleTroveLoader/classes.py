@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 from os import path
 from typing import Union, List, Dict, Tuple
+from urllib.parse import quote
+
 from constants import TYPE_WEB, TYPE_BITTORRENT
 from utils.save import sanitize_name
 from luckydonaldUtils.logger import logging
@@ -274,7 +276,17 @@ class Game(object):
     # end def
 
     @property
+    def folder_url(self):
+        return quote(self.title_sanitized) + path.sep
+    # end def
+
+    @property
     def folder_data(self):
         return path.join(self.folder, 'data') + path.sep
+    # end def
+
+    @property
+    def folder_data_url(self):
+        return path.join(self.folder_url, 'data') + path.sep
     # end def
 # end class
