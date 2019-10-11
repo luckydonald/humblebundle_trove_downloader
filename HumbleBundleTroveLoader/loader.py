@@ -227,7 +227,7 @@ for i, url_data in enumerate(DOWNLOADS):
     url = json_signature[DOWNLOAD_URL_TYPE_TO_SIGNATURE_TYPE_MAP[url_data.type]]
     file_size = int(url_data.size) if isinstance(url_data.size, str) else url_data.size
     logger.info(f'{part}: Downloading {url_data.file!r} from signed url {url!r}, size reported by trove: {human_size(file_size)!r}')
-    download_file(url, url_data.file, log_prefix=f"{part}: ", progress_bar_prefix=f"{part} DOWNLOAD:", file_size=)
+    download_file(url, url_data.file, log_prefix=f"{part}: ", progress_bar_prefix=f"{part} DOWNLOAD:", file_size=DOWNLOAD_CHUNK_SIZE)
     logger.success(f'{part}: Overall download progress: {human_size(downloaded_size)} ({downloaded_size}) of {human_size(DOWNLOAD_TOTAL_SIZE)} ({DOWNLOAD_TOTAL_SIZE}).')
 # end for
 
