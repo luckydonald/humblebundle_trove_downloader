@@ -26,8 +26,8 @@ class RelEnvironment(Environment):
 # end class RelEnvironment
 
 
-def get_template(file_name):
-    env = RelEnvironment(loader=FileSystemLoader("templates"))
+def get_template(file_name, searchpath="templates"):
+    env = RelEnvironment(loader=FileSystemLoader(searchpath=searchpath))
     import os
     try:
         return env.get_template(file_name)
