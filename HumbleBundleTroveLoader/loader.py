@@ -26,6 +26,7 @@ logging.add_colored_handler(level=logging.DEBUG)
 do_download_images = True
 do_download_games = True
 do_generate_html = True
+do_check_hashes = True
 
 # now we can start.
 
@@ -198,40 +199,44 @@ if do_download_games:
                 # end if
 
                 # check md5 and sha1 hash
-                logger.debug(f'{part}: File {url_data.file!r} already exists. Checking file hashes.')
-                hash_md5 = hashlib.md5()
-                hash_sha1 = hashlib.sha1()
-                callback = create_advanced_copy_progress(prefix=f"{part}: HASH ", width=None, use_color=True)
-                already_copied = 0
-                with open(url_data.file, "rb") as f:
-                    for chunk in iter(lambda: f.read(HASH_CHUNK_SIZE), b""):
-                        callback(already_copied, HASH_CHUNK_SIZE, disk_size)
-                        hash_md5.update(chunk)
-                        hash_sha1.update(chunk)
-                        already_copied += HASH_CHUNK_SIZE
-                    # end for
-                    callback(disk_size, HASH_CHUNK_SIZE, disk_size)  # enforce 100%
-                    print()  # enforce linebreak
-                # end with
-                md5 = hash_md5.hexdigest()
-                sha1 = hash_sha1.hexdigest()
-                if url_data.md5 is None:
-                    logger.warning(f'{part}: Existing file {url_data.file!r} has no md5 hashsum. Disk is {md5!r}.')
-                elif md5 != url_data.md5:
-                    logger.warning(f'{part}: Existing file {url_data.file!r} has wrong md5 hashsum. Disk is {md5!r}, online is {url_data.md5!r}.')
-                    needs_download = True
-                # end if
-                if url_data.sha1 is None:
-                    logger.info(
-                        f'{part}: Existing file {url_data.file!r} has no sha1 hashsum. Disk is {sha1!r}.\n'
-                        f'SHA1 hash of Humble Bundle Trove items is often unreliable. Therefore this message can be ignored.'
-                    )
-                elif sha1 != url_data.sha1:
-                    logger.info(
-                        f'{part}: Existing file {url_data.file!r} has wrong sha1 hashsum. Disk is {sha1!r}, online is {url_data.sha1!r}.\n'
-                        f'SHA1 hash of Humble Bundle Trove items is often unreliable. Therefore this message can be ignored.'
-                    )
-                    # needs_download = True  # this seems to be unreliable.
+                if do_check_hashes:
+                    logger.debug(f'{part}: File {url_data.file!r} already exists. Checking file hashes.')
+                    hash_md5 = hashlib.md5()
+                    hash_sha1 = hashlib.sha1()
+                    callback = create_advanced_copy_progress(prefix=f"{part}: HASH ", width=None, use_color=True)
+                    already_copied = 0
+                    with open(url_data.file, "rb") as f:
+                        for chunk in iter(lambda: f.read(HASH_CHUNK_SIZE), b""):
+                            callback(already_copied, HASH_CHUNK_SIZE, disk_size)
+                            hash_md5.update(chunk)
+                            hash_sha1.update(chunk)
+                            already_copied += HASH_CHUNK_SIZE
+                        # end for
+                        callback(disk_size, HASH_CHUNK_SIZE, disk_size)  # enforce 100%
+                        print()  # enforce linebreak
+                    # end with
+                    md5 = hash_md5.hexdigest()
+                    sha1 = hash_sha1.hexdigest()
+                    if url_data.md5 is None:
+                        logger.warning(f'{part}: Existing file {url_data.file!r} has no md5 hashsum. Disk is {md5!r}.')
+                    elif md5 != url_data.md5:
+                        logger.warning(f'{part}: Existing file {url_data.file!r} has wrong md5 hashsum. Disk is {md5!r}, online is {url_data.md5!r}.')
+                        needs_download = True
+                    # end if
+                    if url_data.sha1 is None:
+                        logger.info(
+                            f'{part}: Existing file {url_data.file!r} has no sha1 hashsum. Disk is {sha1!r}.\n'
+                            f'SHA1 hash of Humble Bundle Trove items is often unreliable. Therefore this message can be ignored.'
+                        )
+                    elif sha1 != url_data.sha1:
+                        logger.info(
+                            f'{part}: Existing file {url_data.file!r} has wrong sha1 hashsum. Disk is {sha1!r}, online is {url_data.sha1!r}.\n'
+                            f'SHA1 hash of Humble Bundle Trove items is often unreliable. Therefore this message can be ignored.'
+                        )
+                        # needs_download = True  # this seems to be unreliable.
+                    # end if
+                else:
+                    logger.debug(f'{part}: File {url_data.file!r} already exists. Not checking file hashes though.')
                 # end if
             elif url_data.type == TYPE_BITTORRENT:
                 logger.debug(f'{part}: File {url_data.file!r} already exists. Checking being valid torrent file.')
