@@ -57,6 +57,7 @@ for chunk in range(CHUNKS_COUNT + 1):
     GAME_DATA.extend(chunk_data)
 # end for
 
+
 GAMES = []
 GAMES_COUNT = len(GAME_DATA)
 GAMES_COUNT_LEN = len(str(GAMES_COUNT))
@@ -239,23 +240,28 @@ for i, url_data in enumerate(DOWNLOADS):
         # end if
     # end if
 
-    # get a download url with signature
-    signature = requests.request(
-        method='POST',
-        url=URL_DL_SIGN,
-        headers={
-            'Accept': 'application/json',
-        },
-        cookies=COOKIE_JAR,
-        data=url_data.auth_request,
-    )
-    json_signature = signature.json()
-    url = json_signature[DOWNLOAD_URL_TYPE_TO_SIGNATURE_TYPE_MAP[url_data.type]]
-    file_size = int(url_data.size) if isinstance(url_data.size, str) else url_data.size
-    logger.info(f'{part}: Downloading {url_data.file!r} from signed url {url!r}, size reported by trove: {human_size(file_size)!r}')
-    download_file(url, url_data.file, log_prefix=f"{part}: ", progress_bar_prefix=f"{part} DOWNLOAD:", file_size=DOWNLOAD_CHUNK_SIZE)
-    logger.success(f'{part}: Overall download progress: {human_size(downloaded_size)} ({downloaded_size}) of {human_size(DOWNLOAD_TOTAL_SIZE)} ({DOWNLOAD_TOTAL_SIZE}).')
+        # get a download url with signature
+        signature = requests.request(
+            method='POST',
+            url=URL_DL_SIGN,
+            headers={
+                'Accept': 'application/json',
+            },
+            cookies=COOKIE_JAR,
+            data=url_data.auth_request,
+        )
+        json_signature = signature.json()
+        url = json_signature[DOWNLOAD_URL_TYPE_TO_SIGNATURE_TYPE_MAP[url_data.type]]
+        file_size = int(url_data.size) if isinstance(url_data.size, str) else url_data.size
+        logger.info(f'{part}: Downloading {url_data.file!r} from signed url {url!r}, size reported by trove: {human_size(file_size)!r}')
+        download_file(url, url_data.file, log_prefix=f"{part}: ", progress_bar_prefix=f"{part} DOWNLOAD:", file_size=DOWNLOAD_CHUNK_SIZE)
+        logger.success(f'{part}: Overall download progress: {human_size(downloaded_size)} ({downloaded_size}) of {human_size(DOWNLOAD_TOTAL_SIZE)} ({DOWNLOAD_TOTAL_SIZE}).')
+    # end for
 # end for
+
+
+part = f"[{'':->{GAMES_COUNT_LEN}}/{'':->{GAMES_COUNT_LEN}}]"
+logger.success(f'{part}: Done with downloading.')
 
 
 for i, game in enumerate(GAMES):
