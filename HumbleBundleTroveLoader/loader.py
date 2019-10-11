@@ -1,10 +1,10 @@
+import monkey_patch_to_json
 import torrent_parser
 import requests
 import hashlib
 import json
 from os import path
 from bs4 import BeautifulSoup
-
 from classes import URLData, CarouselContent, Game, Developer, Download, URLs
 from save import download_file, sanitize_name
 from typing import List

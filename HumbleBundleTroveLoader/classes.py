@@ -34,6 +34,18 @@ class URLData(object):
         self.sha1 = sha1
         super().__init__()
     # end if
+
+    def to_json(self):
+        return {
+            "url": self.url,
+            "auth_request": self.auth_request,
+            "file": self.file,
+            "type": self.type,
+            "size": self.size,
+            "md5": self.md5,
+            "sha1": self.sha1,
+        }
+    # end def
 # end class
 
 
@@ -52,6 +64,14 @@ class CarouselContent(object):
         self.thumbnail = thumbnail
         self.screenshot = screenshot
     # end def
+
+    def to_json(self):
+        return {
+            "youtube_link": self.youtube_link,
+            "thumbnail": self.thumbnail,
+            "screenshot": self.screenshot,
+        }
+    # end def
 # end class
 
 
@@ -63,6 +83,13 @@ class Developer(object):
         self.name = name
         self.url = url
     # end if
+
+    def to_json(self):
+        return {
+            "name": self.name,
+            "url": self.url,
+        }
+    # end def
 # end class
 
 
@@ -90,6 +117,20 @@ class Download(object):
         self.human_size = human_size
         self.uploaded_at = uploaded_at
     # end def
+
+    def to_json(self):
+        return {
+            "name": self.name,
+            "machine_name": self.machine_name,
+            "url": self.url,
+            "small": self.small,
+            "md5": self.md5,
+            "sha1": self.sha1,
+            "file_size": self.file_size,
+            "human_size": self.human_size,
+            "uploaded_at": self.uploaded_at,
+        }
+    # end def
 # end class
 
 
@@ -110,6 +151,13 @@ class URLs(object):
     def items(self) -> List[Tuple[str, str]]:
         """ Make it somewhat compatible to the previous dict implementation. """
         return [(k, getattr(self, k)) for k in self.__iter__()]
+    # end def
+
+    def to_json(self):
+        return {
+            "web": self.web,
+            "bittorrent": self.bittorrent,
+        }
     # end def
 # end class
 
@@ -162,6 +210,29 @@ class Game(object):
         self.image = image
         self.background_color = background_color
         self.marketing_blurb = marketing_blurb
+    # end def
+
+    def to_json(self):
+        return {
+            'background_image': self.background_image,
+            'publishers': self.publishers,
+            'date_added': self.date_added,
+            'machine_name': self.machine_name,
+            'humble_original': self.humble_original,
+            'downloads': self.downloads,
+            'popularity': self.popularity,
+            'trove_showcase_css': self.trove_showcase_css,
+            'youtube_link': self.youtube_link,
+            'all_access': self.all_access,
+            'carousel_content': self.carousel_content,
+            'human_name': self.human_name,
+            'logo': self.logo,
+            'description_text': self.description_text,
+            'developers': self.developers,
+            'image': self.image,
+            'background_color': self.background_color,
+            'marketing_blurb': self.marketing_blurb,
+        }
     # end def
 
     @property
