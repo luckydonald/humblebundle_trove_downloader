@@ -7,6 +7,8 @@ from bs4 import BeautifulSoup
 from typing import List, Union
 from settings import DOWNLOAD_DIR, COOKIE_JAR
 from file_size import human_size
+from constants import URL_TROVE, URL_DL_SIGN, URL_DOWNLOADS, URL_INFO_CHUNKS, TYPE_WEB
+from constants import TYPE_BITTORRENT, DOWNLOAD_URL_TYPE_TO_SIGNATURE_TYPE_MAP, HASH_CHUNK_SIZE, DOWNLOAD_CHUNK_SIZE
 from progress_bar import copyfileobj, create_advanced_copy_progress
 from luckydonaldUtils.logger import logging
 from luckydonaldUtils.files.basics import mkdir_p
@@ -14,22 +16,6 @@ from luckydonaldUtils.files.basics import mkdir_p
 
 logger = logging.getLogger(__name__)
 logging.add_colored_handler(level=logging.DEBUG)
-
-URL_TROVE = "https://www.humblebundle.com/monthly/trove"
-URL_DL_SIGN = "https://www.humblebundle.com/api/v1/user/download/sign"
-URL_DOWNLOADS = "https://dl.humble.com/{file}"
-URL_INFO_CHUNKS = "https://www.humblebundle.com/api/v1/trove/chunk?index={chunk}"
-
-TYPE_WEB = 'web'
-TYPE_BITTORRENT = 'bittorrent'
-
-DOWNLOAD_URL_TYPE_TO_SIGNATURE_TYPE_MAP = {
-    TYPE_WEB: 'signed_url',
-    TYPE_BITTORRENT: 'signed_torrent_url',
-}
-
-HASH_CHUNK_SIZE = 16 * 1024
-DOWNLOAD_CHUNK_SIZE = 16 * 1024
 
 
 class URLData(object):
