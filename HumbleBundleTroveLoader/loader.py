@@ -25,6 +25,7 @@ logging.add_colored_handler(level=logging.DEBUG)
 
 do_download_images = True
 do_download_games = True
+do_generate_html = True
 
 # now we can start.
 
@@ -284,6 +285,8 @@ logger.success(f'{part}: Done with downloading.')
 if do_download_images:
     for i, game in enumerate(GAMES):
         part = f"{{{i + 1:0>{GAMES_COUNT_LEN}}/{GAMES_COUNT}}}"
+        mkdir_p(path.join(DOWNLOAD_DIR, game.folder_data))
+
         if game.logo:
             download_file(
                 game.logo, path.join(DOWNLOAD_DIR, game.folder_data, 'logo.png'),
@@ -309,20 +312,18 @@ if do_download_images:
     # end for
 # end if
 
-for i, game in enumerate(GAMES):
-    part = f"<{i + 1:0>{GAMES_COUNT_LEN}}/{GAMES_COUNT}>"
 
-    game_path = path.join(DOWNLOAD_DIR, sanitize_name(game.human_name))
-    # noinspection PyTypeChecker
-    html_path = path.join(game_path, 'info.html')
-    # noinspection PyTypeChecker
-    files_path = path.join(game_path, 'data/')
-    mkdir_p(files_path)
+if do_generate_html:
+    for i, game in enumerate(GAMES):
+        part = f"<{i + 1:0>{GAMES_COUNT_LEN}}/{GAMES_COUNT}>"
 
-    template = get_template('./info.html.template')
-    template_txt = template.render(game=game)
-    with open(html_path, "w") as f:
-        f.write(template_txt)
-    # end with
-    logger.success(f'{part}: Written info to {html_path!r}')
-# end for
+        html_path = path.join(DOWNLOAD_DIR, game.folder, 'info.html')
+
+        template = get_template('./info.html.template')
+        template_txt = template.render(game=game)
+        with open(html_path, "w") as f:
+            f.write(template_txt)
+        # end with
+        logger.success(f'{part}: Written info to {html_path!r}')
+    # end for
+# end if
