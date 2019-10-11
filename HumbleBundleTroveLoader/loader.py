@@ -5,15 +5,15 @@ import hashlib
 import json
 from os import path
 from bs4 import BeautifulSoup
-from save import download_file, sanitize_name
 from typing import List
 from classes import URLData, CarouselContent, Game, Developer, Download, URLs, Publisher
 from settings import DOWNLOAD_DIR, COOKIE_JAR
-from file_size import human_size
-from templater import get_template
 from constants import URL_TROVE, URL_DL_SIGN, URL_DOWNLOADS, URL_INFO_CHUNKS, TYPE_WEB
 from constants import TYPE_BITTORRENT, DOWNLOAD_URL_TYPE_TO_SIGNATURE_TYPE_MAP, HASH_CHUNK_SIZE, DOWNLOAD_CHUNK_SIZE
-from progress_bar import create_advanced_copy_progress
+from utils.save import download_file, sanitize_name
+from utils.file_size import human_size
+from utils.templater import get_template
+from utils.progress_bar import create_advanced_copy_progress
 from luckydonaldUtils.logger import logging
 from luckydonaldUtils.files.basics import mkdir_p
 

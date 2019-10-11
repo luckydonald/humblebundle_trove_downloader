@@ -3,9 +3,9 @@
 import requests
 
 from typing import Union
-from file_size import human_size
+from utils.file_size import human_size
 from constants import DOWNLOAD_CHUNK_SIZE, DOWNLOAD_TRIES
-from progress_bar import create_advanced_copy_progress, copyfileobj
+from utils.progress_bar import create_advanced_copy_progress, copyfileobj
 from luckydonaldUtils.logger import logging
 
 
