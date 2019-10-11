@@ -70,7 +70,7 @@ for i, game_data in enumerate(GAME_DATA):
         background_image=game_data['background-image'],
         publishers=[
             Publisher(name=pub['publisher-name'], url=pub.get('publisher-url'))
-            for pub in game_data['publishers']
+            for pub in game_data.get('publishers', [])
         ],
         date_added=game_data['date-added'],
         machine_name=game_data['machine_name'],
