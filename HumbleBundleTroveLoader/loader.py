@@ -57,16 +57,43 @@ for chunk in range(CHUNKS_COUNT + 1):
     GAME_DATA.extend(chunk_data)
 # end for
 
+GAMES = []
 GAMES_COUNT = len(GAME_DATA)
 GAMES_COUNT_LEN = len(str(GAMES_COUNT))
 DOWNLOAD_TOTAL_SIZE = 0
 DOWNLOADS: List[URLData] = []  # file: url
-for i, game in enumerate(GAME_DATA):
+for i, game_data in enumerate(GAME_DATA):
     part = f"<{i + 1:0>{GAMES_COUNT_LEN}}/{GAMES_COUNT}>"
-    title = game['machine_name']
-    title = game.get('human_name', title)
-    title = game.get('human-name', title)
-    logger.debug(f'{part}: Found Game {title!r} with {len(game["downloads"])} downloads.')
+    game = Game(
+        background_image=game_data['background-image'],
+        publishers=game_data['publishers'],
+        date_added=game_data['date-added'],
+        machine_name=game_data['machine_name'],
+        humble_original=game_data['humble-original'],
+        downloads=game_data['downloads'],
+        popularity=game_data['popularity'],
+        trove_showcase_css=game_data['trove-showcase-css'],
+        youtube_link=game_data['youtube-link'],
+        all_access=game_data['all-access'],
+        carousel_content=CarouselContent(
+            youtube_link=game_data['carousel-content']['youtube-link'],
+            thumbnail=game_data['carousel-content']['thumbnail'],
+            screenshot=game_data['carousel-content']['screenshot'],
+        ),
+        human_name=game_data['human-name'],
+        logo=game_data['logo'],
+        description_text=game_data['description-text'],
+        developers=[
+            Developer(name=dev['developer-name'], url=dev['developer-url'])
+            for dev in game_data['developers']
+        ],
+        image=game_data['image'],
+        background_color=game_data['background-color'],
+        marketing_blurb=game_data['marketing-blurb'],
+    )
+    GAMES.append(game)
+    title = game.human_name if game.human_name else game.machine_name
+    logger.debug(f'{part}: Found Game {title!r} with {len(game_data["downloads"])} downloads.')
     game_path = path.join(DOWNLOAD_DIR, sanitize_name(title))
     mkdir_p(game_path)
     for platform, download_meta in game['downloads'].items():
@@ -215,35 +242,8 @@ for i, url_data in enumerate(DOWNLOADS):
 # end for
 
 
-for i, game_data in enumerate(GAME_DATA):
+for i, game in enumerate(GAMES):
     part = f"<{i + 1:0>{GAMES_COUNT_LEN}}/{GAMES_COUNT}>"
-    game = Game(
-        background_image=game_data['background-image'],
-        publishers=game_data['publishers'],
-        date_added=game_data['date-added'],
-        machine_name=game_data['machine_name'],
-        humble_original=game_data['humble-original'],
-        downloads=game_data['downloads'],
-        popularity=game_data['popularity'],
-        trove_showcase_css=game_data['trove-showcase-css'],
-        youtube_link=game_data['youtube-link'],
-        all_access=game_data['all-access'],
-        carousel_content=CarouselContent(
-            youtube_link=game_data['carousel-content']['youtube-link'],
-            thumbnail=game_data['carousel-content']['thumbnail'],
-            screenshot=game_data['carousel-content']['screenshot'],
-        ),
-        human_name=game_data['human-name'],
-        logo=game_data['logo'],
-        description_text=game_data['description-text'],
-        developers=[
-            Developer(name=dev['developer-name'], url=dev['developer-url'])
-            for dev in game_data['developers']
-        ],
-        image=game_data['image'],
-        background_color=game_data['background-color'],
-        marketing_blurb=game_data['marketing-blurb'],
-    )
 
     game_path = path.join(DOWNLOAD_DIR, sanitize_name(game.human_name))
     # noinspection PyTypeChecker
