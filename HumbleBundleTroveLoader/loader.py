@@ -84,7 +84,7 @@ for i, game_data in enumerate(GAME_DATA):
                 machine_name=dl['machine_name'],
                 url=URLs(
                     web=dl['url']['web'],
-                    bittorrent=dl['url']['bittorrent'],
+                    bittorrent=dl['url'].get('bittorrent'),
                 ),
                 small=dl.get('small'),
                 md5=dl['md5'],

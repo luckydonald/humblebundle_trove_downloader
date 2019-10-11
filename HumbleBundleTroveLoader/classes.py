@@ -154,7 +154,7 @@ class Download(object):
 
 class URLs(object):
     web: str
-    bittorrent: str
+    bittorrent: Union[None, str]
 
     def __init__(self, web, bittorrent):
         self.web = web
@@ -163,7 +163,12 @@ class URLs(object):
 
     def __iter__(self):
         """ Make it somewhat compatible to the previous dict implementation. """
-        return [TYPE_WEB, TYPE_BITTORRENT]
+        if self.web:
+            yield TYPE_WEB
+        # end if
+        if self.bittorrent:
+            yield TYPE_BITTORRENT
+        # end if
     # end def
 
     def items(self) -> List[Tuple[str, str]]:
