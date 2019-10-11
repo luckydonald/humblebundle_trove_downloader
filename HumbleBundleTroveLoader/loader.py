@@ -45,6 +45,8 @@ trove_data = json.loads(json_script_tag_trove_data_string)
 
 CHUNKS_COUNT = trove_data['chunks']
 GAME_DATA = []
+GAME_DATA.extend(trove_data['standardProducts'])
+GAME_DATA.extend(trove_data['newlyAdded'])
 
 logger.info(f"We have {CHUNKS_COUNT} pages of {trove_data['gamesPerChunk']} games each to load.")
 for chunk in range(CHUNKS_COUNT + 1):
