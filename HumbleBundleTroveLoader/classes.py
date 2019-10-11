@@ -77,7 +77,7 @@ class CarouselContent(object):
 
 class Developer(object):
     name: str
-    url: str
+    url: Union[None, str]
 
     def __init__(self, name, url):
         self.name = name
