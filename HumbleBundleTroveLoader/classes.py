@@ -136,4 +136,9 @@ class Game(object):
         self.background_color = background_color
         self.marketing_blurb = marketing_blurb
     # end def
+
+    @property
+    def title(self):
+        return self.human_name if self.human_name else self.machine_name
+    # end def
 # end class

@@ -105,9 +105,8 @@ for i, game_data in enumerate(GAME_DATA):
         marketing_blurb=game_data['marketing-blurb'],
     )
     GAMES.append(game)
-    title = game.human_name if game.human_name else game.machine_name
-    logger.debug(f'{part}: Found Game {title!r} with {len(game_data["downloads"])} downloads.')
-    game_path = path.join(DOWNLOAD_DIR, sanitize_name(title))
+    logger.debug(f'{part}: Found Game {game.title!r} with {len(game_data["downloads"])} downloads.')
+    game_path = path.join(DOWNLOAD_DIR, sanitize_name(game.title))
     mkdir_p(game_path)
     for platform, download_meta in game_data['downloads'].items():
         download_path = path.join(game_path, sanitize_name(platform))
