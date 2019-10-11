@@ -5,7 +5,7 @@ import json
 from os import path
 from bs4 import BeautifulSoup
 
-from classes import URLData, CarouselContent, Game, Developer, Download
+from classes import URLData, CarouselContent, Game, Developer, Download, URLs
 from save import download_file, sanitize_name
 from typing import List
 from settings import DOWNLOAD_DIR, COOKIE_JAR
@@ -74,7 +74,10 @@ for i, game_data in enumerate(GAME_DATA):
             k: Download(
                 name=dl['name'],
                 machine_name=dl['machine_name'],
-                url=dl['url'],
+                url=URLs(
+                    web=dl['url']['web'],
+                    bittorent=dl['url']['bittorent'],
+                ),
                 small=dl['small'],
                 md5=dl['md5'],
                 sha1=dl['sha1'],

@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from typing import Union, List, Dict
+from typing import Union, List, Dict, Tuple
 
 from luckydonaldUtils.logger import logging
+
+from constants import TYPE_WEB, TYPE_BITTORRENT
 
 __author__ = 'luckydonald'
 
@@ -67,7 +69,7 @@ class Developer(object):
 class Download(object):
     name: str
     machine_name: str
-    url: Dict[str, str]
+    url: 'URLs'
     small: int
     md5: str
     sha1: Union[None, str]
@@ -89,6 +91,31 @@ class Download(object):
         self.uploaded_at = uploaded_at
     # end def
 # end class
+
+
+class URLs(object):
+    web: str
+    bittorent: str
+
+    def __init__(self, web, bittorent):
+        self.web = web
+        self.bittorent = bittorent
+    # end def
+
+    def __iter__(self):
+        """ Make it somewhat compatible to the previous dict implementation. """
+        return [TYPE_WEB, TYPE_BITTORRENT]
+    # end def
+
+    def items(self) -> List[Tuple[str, str]]:
+        """ Make it somewhat compatible to the previous dict implementation. """
+        return [(k, getattr(self, k)) for k in self.__iter__()]
+    # end def
+# end class
+
+
+assert TYPE_WEB == 'web'  # makes sure you don't forget about the class above when renaming those.
+assert TYPE_BITTORRENT == 'bittorrent'  # makes sure you don't forget about the class above when renaming those.
 
 
 class Game(object):
