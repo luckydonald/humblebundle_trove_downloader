@@ -65,6 +65,7 @@ DOWNLOAD_TOTAL_SIZE = 0
 DOWNLOADS: List[URLData] = []  # file: url
 for i, game_data in enumerate(GAME_DATA):
     part = f"<{i + 1:0>{GAMES_COUNT_LEN}}/{GAMES_COUNT}>"
+    logger.debug(f'{part}: Parsing json: {game_data!r}')
     game = Game(
         background_image=game_data['background-image'],
         publishers=game_data['publishers'],
