@@ -41,6 +41,7 @@
 <html>
     <head>
         <title>{{ game.human_name }}</title>
+        <meta charset="UTF-8">
     </head>
     <body>
         <h1>{{ game.human_name }}</h1>
