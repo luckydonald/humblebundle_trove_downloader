@@ -294,8 +294,8 @@ for i, game in enumerate(GAMES):
     if game.image:
         download_file(game.image, path.join(files_path, 'image.png'))
     # end if
-    for i, screenshot in enumerate(game.carousel_content.screenshot):
-        download_file(screenshot, path.join(files_path, f'screenshot_{i}.png'))
+    for i2, screenshot in enumerate(game.carousel_content.screenshot):
+        download_file(screenshot, path.join(files_path, f'screenshot_{i2}.png'))
     # end if
     template = get_template('./info.html.template')
     template_txt = template.render(game=game)
