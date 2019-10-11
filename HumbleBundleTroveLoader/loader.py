@@ -1,4 +1,5 @@
-import monkey_patch_to_json
+# noinspection PyUnresolvedReferences
+import utils.monkey_patch_to_json  # this needs to be first
 import torrent_parser
 import requests
 import hashlib
