@@ -64,13 +64,40 @@ class Developer(object):
 # end class
 
 
+class Download(object):
+    name: str
+    machine_name: str
+    url: Dict[str, str]
+    small: int
+    md5: str
+    sha1: Union[None, str]
+    file_size: int
+    human_size: str
+    uploaded_at: int
+
+    def __init__(
+        self, name, machine_name, url, small, md5, sha1, file_size, human_size, uploaded_at
+    ):
+        self.name = name
+        self.machine_name = machine_name
+        self.url = url
+        self.small = small
+        self.md5 = md5
+        self.sha1 = sha1
+        self.file_size = file_size
+        self.human_size = human_size
+        self.uploaded_at = uploaded_at
+    # end def
+# end class
+
+
 class Game(object):
     background_image: Union[None, str]
     publishers: Union[None, dict]
     date_added: Union[None, int]
     machine_name: Union[None, str]
     humble_original: Union[None, bool]
-    downloads: Dict[str, dict]
+    downloads: Dict[str, Download]
     popularity: Union[None, int]
     trove_showcase_css: Union[None, str]
     youtube_link: Union[None, str]

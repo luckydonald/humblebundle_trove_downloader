@@ -5,7 +5,7 @@ import json
 from os import path
 from bs4 import BeautifulSoup
 
-from classes import URLData, CarouselContent, Game, Developer
+from classes import URLData, CarouselContent, Game, Developer, Download
 from save import download_file, sanitize_name
 from typing import List
 from settings import DOWNLOAD_DIR, COOKIE_JAR
@@ -70,7 +70,20 @@ for i, game_data in enumerate(GAME_DATA):
         date_added=game_data['date-added'],
         machine_name=game_data['machine_name'],
         humble_original=game_data['humble-original'],
-        downloads=game_data['downloads'],
+        downloads={
+            k: Download(
+                name=dl['name'],
+                machine_name=dl['machine_name'],
+                url=dl['url'],
+                small=dl['small'],
+                md5=dl['md5'],
+                sha1=dl['sha1'],
+                file_size=dl['file_size'],
+                human_size=dl['human_size'],
+                uploaded_at=dl['uploaded_at'],
+            )
+            for k, dl in game_data['downloads'].items()
+        },
         popularity=game_data['popularity'],
         trove_showcase_css=game_data['trove-showcase-css'],
         youtube_link=game_data['youtube-link'],
@@ -96,7 +109,7 @@ for i, game_data in enumerate(GAME_DATA):
     logger.debug(f'{part}: Found Game {title!r} with {len(game_data["downloads"])} downloads.')
     game_path = path.join(DOWNLOAD_DIR, sanitize_name(title))
     mkdir_p(game_path)
-    for platform, download_meta in game['downloads'].items():
+    for platform, download_meta in game_data['downloads'].items():
         download_path = path.join(game_path, sanitize_name(platform))
         mkdir_p(download_path)
         for download_type, download in download_meta['url'].items():

@@ -9,8 +9,10 @@
             'sha1': '7464305799c6818c715cc9fae203dda0fcb3d02e',
             'uploaded_at': 1568238065,
             'name': 'Download',
-            'url': {'web': 'shadynight_v1.01.zip',
-            'bittorrent': 'shadynight_v1.01.zip.torrent'},
+            'url': {
+                'web': 'shadynight_v1.01.zip',
+                'bittorrent': 'shadynight_v1.01.zip.torrent'
+            },
             'machine_name': 'shadyknight_windows',
             'file_size': 62303303,
             'small': 0,
