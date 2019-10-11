@@ -85,7 +85,7 @@ for i, game_data in enumerate(GAME_DATA):
                 sha1=dl.get('sha1'),
                 file_size=dl['file_size'],
                 human_size=dl['size'],
-                uploaded_at=dl['uploaded_at'],
+                uploaded_at=dl.get('uploaded_at'),
             )
             for k, dl in game_data['downloads'].items()
         },

@@ -102,7 +102,7 @@ class Download(object):
     sha1: Union[None, str]
     file_size: int
     human_size: str
-    uploaded_at: int
+    uploaded_at: Union[None, int]
 
     def __init__(
         self, name, machine_name, url, small, md5, sha1, file_size, human_size, uploaded_at
