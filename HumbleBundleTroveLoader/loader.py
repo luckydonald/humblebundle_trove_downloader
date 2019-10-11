@@ -69,7 +69,10 @@ for i, game_data in enumerate(GAME_DATA):
     game = Game(
         background_image=game_data['background-image'],
         publishers=[
-            Publisher(name=pub['publisher-name'], url=pub.get('publisher-url'))
+            Publisher(
+                name=pub['publisher-name'],
+                url=pub.get('publisher-url'),
+            )
             for pub in (game_data['publishers'] if game_data.get('publishers', None) is not None else [])
         ],
         date_added=game_data['date-added'],
