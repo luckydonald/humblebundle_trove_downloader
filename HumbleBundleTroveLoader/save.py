@@ -34,3 +34,8 @@ def download_file(url: str, file: str, log_prefix: str = "", progress_bar_prefix
     # end with
     logger.success(f'{log_prefix}Downloaded {url!r} to {file!r}.')
 # end def
+
+
+def sanitize_name(name: str) -> str:
+    return name.replace(': ', ' — ').replace(':', ' — ').replace('/', ':')
+# end def
