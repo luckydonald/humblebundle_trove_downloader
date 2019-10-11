@@ -165,92 +165,94 @@ for i, game_data in enumerate(GAME_DATA):
 
 logger.info(f'---> Total storage needed: {human_size(DOWNLOAD_TOTAL_SIZE)}')
 
-DOWNLOADS_COUNT = len(DOWNLOADS)
-DOWNLOADS_COUNT_LEN = len(str(DOWNLOADS_COUNT))
-url_data: URLData
-downloaded_size = 0
-for i, url_data in enumerate(DOWNLOADS):
-    part = f"[{i + 1:0>{DOWNLOADS_COUNT_LEN}}/{DOWNLOADS_COUNT}]"
-    logger.info(f'{part}: Checking {url_data.file!r} from {url_data.url!r}...')
-    # check if file already exists.
-    if path.exists(url_data.file):
-        logger.debug(f'{part}: File {url_data.file!r} already exists.')
-        needs_download = False
-        if url_data.type == TYPE_WEB:
-            # check file size
-            logger.debug(f'{part}: File {url_data.file!r} already exists. Checking size.')
-            disk_size = path.getsize(url_data.file)
-            if disk_size == url_data.size:
-                logger.debug(f'{part}: File {url_data.file!r} already exists. Checking size.')
-                downloaded_size += url_data.size
-            else:
-                logger.warning(f'Existing file {url_data.file!r} has wrong filesize. Disk is {disk_size!r}, online is {url_data.size!r}.')
-                needs_download = True
-            # end if
 
-            # check md5 and sha1 hash
-            logger.debug(f'{part}: File {url_data.file!r} already exists. Checking file hashes.')
-            hash_md5 = hashlib.md5()
-            hash_sha1 = hashlib.sha1()
-            callback = create_advanced_copy_progress(prefix=f"{part}: HASH ", width=None, use_color=True)
-            already_copied = 0
-            with open(url_data.file, "rb") as f:
-                for chunk in iter(lambda: f.read(HASH_CHUNK_SIZE), b""):
-                    callback(already_copied, HASH_CHUNK_SIZE, disk_size)
-                    hash_md5.update(chunk)
-                    hash_sha1.update(chunk)
-                    already_copied += HASH_CHUNK_SIZE
-                # end for
-                callback(disk_size, HASH_CHUNK_SIZE, disk_size)  # enforce 100%
-                print()  # enforce linebreak
-            # end with
-            md5 = hash_md5.hexdigest()
-            sha1 = hash_sha1.hexdigest()
-            if url_data.md5 is None:
-                logger.warning(f'{part}: Existing file {url_data.file!r} has no md5 hashsum. Disk is {md5!r}.')
-            elif md5 != url_data.md5:
-                logger.warning(f'{part}: Existing file {url_data.file!r} has wrong md5 hashsum. Disk is {md5!r}, online is {url_data.md5!r}.')
-                needs_download = True
-            # end if
-            if url_data.sha1 is None:
-                logger.info(
-                    f'{part}: Existing file {url_data.file!r} has no sha1 hashsum. Disk is {sha1!r}.\n'
-                    f'SHA1 hash of Humble Bundle Trove items is often unreliable. Therefore this message can be ignored.'
+if True:  # TODO: add skip mechanism
+    DOWNLOADS_COUNT = len(DOWNLOADS)
+    DOWNLOADS_COUNT_LEN = len(str(DOWNLOADS_COUNT))
+    url_data: URLData
+    downloaded_size = 0
+    for i, url_data in enumerate(DOWNLOADS):
+        part = f"[{i + 1:0>{DOWNLOADS_COUNT_LEN}}/{DOWNLOADS_COUNT}]"
+        logger.info(f'{part}: Checking {url_data.file!r} from {url_data.url!r}...')
+        # check if file already exists.
+        if path.exists(url_data.file):
+            logger.debug(f'{part}: File {url_data.file!r} already exists.')
+            needs_download = False
+            if url_data.type == TYPE_WEB:
+                # check file size
+                logger.debug(f'{part}: File {url_data.file!r} already exists. Checking size.')
+                disk_size = path.getsize(url_data.file)
+                if disk_size == url_data.size:
+                    logger.debug(f'{part}: File {url_data.file!r} already exists. Checking size.')
+                    downloaded_size += url_data.size
+                else:
+                    logger.warning(f'Existing file {url_data.file!r} has wrong filesize. Disk is {disk_size!r}, online is {url_data.size!r}.')
+                    needs_download = True
+                # end if
+
+                # check md5 and sha1 hash
+                logger.debug(f'{part}: File {url_data.file!r} already exists. Checking file hashes.')
+                hash_md5 = hashlib.md5()
+                hash_sha1 = hashlib.sha1()
+                callback = create_advanced_copy_progress(prefix=f"{part}: HASH ", width=None, use_color=True)
+                already_copied = 0
+                with open(url_data.file, "rb") as f:
+                    for chunk in iter(lambda: f.read(HASH_CHUNK_SIZE), b""):
+                        callback(already_copied, HASH_CHUNK_SIZE, disk_size)
+                        hash_md5.update(chunk)
+                        hash_sha1.update(chunk)
+                        already_copied += HASH_CHUNK_SIZE
+                    # end for
+                    callback(disk_size, HASH_CHUNK_SIZE, disk_size)  # enforce 100%
+                    print()  # enforce linebreak
+                # end with
+                md5 = hash_md5.hexdigest()
+                sha1 = hash_sha1.hexdigest()
+                if url_data.md5 is None:
+                    logger.warning(f'{part}: Existing file {url_data.file!r} has no md5 hashsum. Disk is {md5!r}.')
+                elif md5 != url_data.md5:
+                    logger.warning(f'{part}: Existing file {url_data.file!r} has wrong md5 hashsum. Disk is {md5!r}, online is {url_data.md5!r}.')
+                    needs_download = True
+                # end if
+                if url_data.sha1 is None:
+                    logger.info(
+                        f'{part}: Existing file {url_data.file!r} has no sha1 hashsum. Disk is {sha1!r}.\n'
+                        f'SHA1 hash of Humble Bundle Trove items is often unreliable. Therefore this message can be ignored.'
+                    )
+                elif sha1 != url_data.sha1:
+                    logger.info(
+                        f'{part}: Existing file {url_data.file!r} has wrong sha1 hashsum. Disk is {sha1!r}, online is {url_data.sha1!r}.\n'
+                        f'SHA1 hash of Humble Bundle Trove items is often unreliable. Therefore this message can be ignored.'
+                    )
+                    # needs_download = True  # this seems to be unreliable.
+                # end if
+            elif url_data.type == TYPE_BITTORRENT:
+                logger.debug(f'{part}: File {url_data.file!r} already exists. Checking being valid torrent file.')
+                try:
+                    torrent_parser.parse_torrent_file(url_data.file)
+                except torrent_parser.InvalidTorrentDataException as e:
+                    logger.warning(f'{part}: Could not parse existing torrent file.\n{e!s}', exc_info=True)
+                    needs_download = True
+                # end try
+            else:  # neither torrent nor direct web download
+                logger.fatal(
+                    f'{part}: Could not check size, md5 or sha1 for file {url_data.file!r} as it is not of type'
+                    f' {TYPE_WEB!r} or {TYPE_BITTORRENT!r},  but is of type {url_data.type!r}.'
                 )
-            elif sha1 != url_data.sha1:
-                logger.info(
-                    f'{part}: Existing file {url_data.file!r} has wrong sha1 hashsum. Disk is {sha1!r}, online is {url_data.sha1!r}.\n'
-                    f'SHA1 hash of Humble Bundle Trove items is often unreliable. Therefore this message can be ignored.'
-                )
-                # needs_download = True  # this seems to be unreliable.
+                needs_download = None
             # end if
-        elif url_data.type == TYPE_BITTORRENT:
-            logger.debug(f'{part}: File {url_data.file!r} already exists. Checking being valid torrent file.')
-            try:
-                torrent_parser.parse_torrent_file(url_data.file)
-            except torrent_parser.InvalidTorrentDataException as e:
-                logger.warning(f'{part}: Could not parse existing torrent file.\n{e!s}', exc_info=True)
-                needs_download = True
-            # end try
-        else:  # neither torrent nor direct web download
-            logger.fatal(
-                f'{part}: Could not check size, md5 or sha1 for file {url_data.file!r} as it is not of type'
-                f' {TYPE_WEB!r} or {TYPE_BITTORRENT!r},  but is of type {url_data.type!r}.'
-            )
-            needs_download = None
+            if needs_download is None:
+                logger.success(f'{part}: File {url_data.file!r} was found. Could be correct. Skipping download.')
+                logger.success(f'{part}: Overall discovery progress: {human_size(downloaded_size)} ({downloaded_size}) of {human_size(DOWNLOAD_TOTAL_SIZE)} ({DOWNLOAD_TOTAL_SIZE}).')
+                continue
+            elif not needs_download:
+                logger.success(f'{part}: Existing file {url_data.file!r} has correct metadata. Skipping download.')
+                logger.success(f'{part}: Overall discovery progress: {human_size(downloaded_size)} ({downloaded_size}) of {human_size(DOWNLOAD_TOTAL_SIZE)} ({DOWNLOAD_TOTAL_SIZE}).')
+                continue
+            else:
+                logger.warning(f'{part}: Will download again.')
+            # end if
         # end if
-        if needs_download is None:
-            logger.success(f'{part}: File {url_data.file!r} was found. Could be correct. Skipping download.')
-            logger.success(f'{part}: Overall discovery progress: {human_size(downloaded_size)} ({downloaded_size}) of {human_size(DOWNLOAD_TOTAL_SIZE)} ({DOWNLOAD_TOTAL_SIZE}).')
-            continue
-        elif not needs_download:
-            logger.success(f'{part}: Existing file {url_data.file!r} has correct metadata. Skipping download.')
-            logger.success(f'{part}: Overall discovery progress: {human_size(downloaded_size)} ({downloaded_size}) of {human_size(DOWNLOAD_TOTAL_SIZE)} ({DOWNLOAD_TOTAL_SIZE}).')
-            continue
-        else:
-            logger.warning(f'{part}: Will download again.')
-        # end if
-    # end if
 
         # get a download url with signature
         signature = requests.request(
