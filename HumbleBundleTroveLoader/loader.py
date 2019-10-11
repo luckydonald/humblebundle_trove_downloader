@@ -273,6 +273,7 @@ for i, game in enumerate(GAMES):
     html_path = path.join(game_path, 'index.html')
     # noinspection PyTypeChecker
     files_path = path.join(game_path, 'data/')
+    mkdir_p(files_path)
 
     if game.logo:
         download_file(game.logo, path.join(files_path, 'logo.png'))
