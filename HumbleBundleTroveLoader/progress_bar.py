@@ -18,6 +18,8 @@ INCOMPLETE_BLOCK_GRAD = ['░', '▒', '▓']
 # for unknown length downloads
 ACTIVITY_MODE = ['▹', '▸']
 
+FALLBACK_SIZE = 30
+
 
 def prepare_color(name):
     # noinspection PyCallByClass
@@ -127,7 +129,11 @@ def build_activity_bar(integer: int, width: int, use_color: bool) -> str:
 def prepare_width(width):
     # if width unset use full terminal
     if width is None:
-        width = os.get_terminal_size().columns
+        try:
+            width = os.get_terminal_size().columns
+        except OSError:
+            width = FALLBACK_SIZE
+        # end ef
     # end with
     return width
 # end def
