@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from typing import Union, List
+from typing import Union, List, Dict
 
 from luckydonaldUtils.logger import logging
 
@@ -70,7 +70,7 @@ class Game(object):
     date_added: Union[None, int]
     machine_name: Union[None, str]
     humble_original: Union[None, bool]
-    downloads: Union[None, dict]
+    downloads: Dict[str, dict]
     popularity: Union[None, int]
     trove_showcase_css: Union[None, str]
     youtube_link: Union[None, str]

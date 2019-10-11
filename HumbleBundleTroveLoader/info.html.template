@@ -4,7 +4,20 @@
     'date_added': 1568394000,
     'machine_name': 'shadyknight_trove',
     'humble_original': True,
-    'downloads': {'windows': {'sha1': '7464305799c6818c715cc9fae203dda0fcb3d02e', 'uploaded_at': 1568238065, 'name': 'Download', 'url': {'web': 'shadynight_v1.01.zip', 'bittorrent': 'shadynight_v1.01.zip.torrent'}, 'machine_name': 'shadyknight_windows', 'file_size': 62303303, 'small': 0, 'md5': '98f47d81d57d11e509dfe917f72244a4', 'size': '59.4 MB'}},
+    'downloads': {
+        'windows': {
+            'sha1': '7464305799c6818c715cc9fae203dda0fcb3d02e',
+            'uploaded_at': 1568238065,
+            'name': 'Download',
+            'url': {'web': 'shadynight_v1.01.zip',
+            'bittorrent': 'shadynight_v1.01.zip.torrent'},
+            'machine_name': 'shadyknight_windows',
+            'file_size': 62303303,
+            'small': 0,
+            'md5': '98f47d81d57d11e509dfe917f72244a4',
+            'size': '59.4 MB',
+        }
+    },
     'popularity': 6585,
     'trove_showcase_css': None,
     'youtube_link': None,
