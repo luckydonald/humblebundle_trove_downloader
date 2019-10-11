@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 {% set _game={
     'background_image': None,
     'publishers': None,
@@ -50,13 +51,20 @@
             {{ game.description_text | safe }}
         </div>
         <h3>Screenshots</h3>
-        {% for youtube_id in game.carousel_content and game.carousel_content.youtube_link %}
-            <iframe allowFullScreen="allowFullScreen" src="https://www.youtube.com/embed/{{youtube_id}}?ecver=1&egm=1&iv_load_policy=3&rel=0&showinfo=0&yt:stretch=16:9&autohide=1&color=white" width="560" height="315" allowtransparency="true" frameborder="0"></iframe><br />
-        {% endfor %}
-        {% for _ in game.carousel_content.screenshot %}
-            <img src="data/screenshot_{{ loop.index0 }}.png" /><br />
-        {% endfor %}
-
+        <style>li { float: left; }</style>
+        <ul>
+            {% for youtube_id in game.carousel_content and game.carousel_content.youtube_link %}
+                <li>
+                    <iframe allowFullScreen="allowFullScreen" src="https://www.youtube.com/embed/{{youtube_id}}?ecver=1&egm=1&iv_load_policy=3&rel=0&showinfo=0&yt:stretch=16:9&autohide=1&color=white" width="560" height="315" allowtransparency="true" frameborder="0"></iframe>
+                </li>
+            {% endfor %}
+            {% for _ in game.carousel_content.screenshot %}
+                <li>
+                    <img src="data/screenshot_{{ loop.index0 }}.png" />
+                </li>
+            {% endfor %}
+        </ul>
+        <br>
         <pre>
             {{ game | tojson }}
         </pre>
