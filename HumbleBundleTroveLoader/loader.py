@@ -23,6 +23,9 @@ logger = logging.getLogger(__name__)
 logging.add_colored_handler(level=logging.DEBUG)
 
 
+do_download_images = True
+do_download_games = True
+
 # now we can start.
 
 
@@ -166,7 +169,7 @@ for i, game_data in enumerate(GAME_DATA):
 logger.info(f'---> Total storage needed: {human_size(DOWNLOAD_TOTAL_SIZE)}')
 
 
-if True:  # TODO: add skip mechanism
+if do_download_games:  # TODO: add skip mechanism
     DOWNLOADS_COUNT = len(DOWNLOADS)
     DOWNLOADS_COUNT_LEN = len(str(DOWNLOADS_COUNT))
     url_data: URLData
@@ -278,25 +281,44 @@ part = f"[{'':->{GAMES_COUNT_LEN}}/{'':->{GAMES_COUNT_LEN}}]"
 logger.success(f'{part}: Done with downloading.')
 
 
+if do_download_images:
+    for i, game in enumerate(GAMES):
+        part = f"{{{i + 1:0>{GAMES_COUNT_LEN}}/{GAMES_COUNT}}}"
+        if game.logo:
+            download_file(
+                game.logo, path.join(files_path, 'logo.png'),
+                log_prefix=f'{part} logo: ', progress_bar_prefix="LOGO: ",
+            )
+        # end if
+        if game.image:
+            download_file(
+                game.image, path.join(files_path, 'image.png'),
+                log_prefix=f'{part} image: ', progress_bar_prefix="IMG: ",
+            )
+        # end if
+        screenshot_len = len(game.carousel_content.screenshot)
+        screenshot_len_len = len(str(screenshot_len))
+        logger.debug(f'{part}: Found {screenshot_len} screenshots.')
+        for i2, screenshot in enumerate(game.carousel_content.screenshot):
+            download_file(
+                screenshot, path.join(files_path, f'screenshot_{i2}.png'),
+                log_prefix=f'{part} screenshot ({i2 + 1:0>{screenshot_len}}/{screenshot_len}): ',
+                progress_bar_prefix=f"SCR{i2 + 1:0>{screenshot_len}}: ",
+            )
+        # end if
+    # end for
+# end if
+
 for i, game in enumerate(GAMES):
     part = f"<{i + 1:0>{GAMES_COUNT_LEN}}/{GAMES_COUNT}>"
 
     game_path = path.join(DOWNLOAD_DIR, sanitize_name(game.human_name))
     # noinspection PyTypeChecker
-    html_path = path.join(game_path, 'index.html')
+    html_path = path.join(game_path, 'info.html')
     # noinspection PyTypeChecker
     files_path = path.join(game_path, 'data/')
     mkdir_p(files_path)
 
-    if game.logo:
-        download_file(game.logo, path.join(files_path, 'logo.png'))
-    # end if
-    if game.image:
-        download_file(game.image, path.join(files_path, 'image.png'))
-    # end if
-    for i2, screenshot in enumerate(game.carousel_content.screenshot):
-        download_file(screenshot, path.join(files_path, f'screenshot_{i2}.png'))
-    # end if
     template = get_template('./info.html.template')
     template_txt = template.render(game=game)
     with open(html_path, "w") as f:
