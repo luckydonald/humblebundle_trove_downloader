@@ -83,7 +83,7 @@ for i, game_data in enumerate(GAME_DATA):
                     web=dl['url']['web'],
                     bittorrent=dl['url']['bittorrent'],
                 ),
-                small=dl['small'],
+                small=dl.get('small'),
                 md5=dl['md5'],
                 sha1=dl.get('sha1'),
                 file_size=dl['file_size'],

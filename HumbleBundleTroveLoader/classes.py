@@ -115,7 +115,7 @@ class Download(object):
     name: str
     machine_name: str
     url: 'URLs'
-    small: int
+    small: Union[None, int]
     md5: str
     sha1: Union[None, str]
     file_size: int
