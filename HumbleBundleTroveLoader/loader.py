@@ -311,7 +311,7 @@ if do_download_images:
         for i2, screenshot in enumerate(game.carousel_content.screenshot):
             download_file(
                 screenshot, path.join(DOWNLOAD_DIR, game.folder_data, f'screenshot_{i2}.png'),
-                log_prefix=f'{part} screenshot ({i2 + 1:0>{screenshot_len}}/{screenshot_len}): ',
+                log_prefix=f'{part} screenshot ({i2 + 1:0>{screenshot_len_len}}/{screenshot_len}): ',
                 progress_bar_prefix=f"SCR{i2 + 1:0>{screenshot_len}}: ",
             )
         # end if
