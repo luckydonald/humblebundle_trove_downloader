@@ -67,12 +67,14 @@ for i, game in enumerate(GAME_DATA):
     title = game.get('human_name', title)
     title = game.get('human-name', title)
     logger.debug(f'{part}: Found Game {title!r} with {len(game["downloads"])} downloads.')
-    game_path = path.join(DOWNLOAD_DIR, title)
+    game_path = path.join(DOWNLOAD_DIR, sanitize_name(title))
     mkdir_p(game_path)
     for platform, download_meta in game['downloads'].items():
-        download_path = path.join(game_path, platform)
+        download_path = path.join(game_path, sanitize_name(platform))
         mkdir_p(download_path)
         for download_type, download in download_meta['url'].items():
+            download_file_name = sanitize_name(download)
+            download_file_path = path.join(download_path, download_file_name)
             auth_request_data = {
                 "machine_name": download_meta['machine_name'],
                 "filename": download
@@ -89,7 +91,7 @@ for i, game in enumerate(GAME_DATA):
             DOWNLOADS.append(URLData(
                 url=URL_DOWNLOADS.format(file=download),
                 auth_request=auth_request_data,
-                file=path.join(download_path, sanitize_name(download)),
+                file=download_file_path,
                 type=download_type,
                 size=download_meta.get('file_size', None) if download_type == TYPE_WEB else None,  # only the actual file.
                 md5=download_meta.get('md5', None) if download_type == TYPE_WEB else None,  # only the actual file.
