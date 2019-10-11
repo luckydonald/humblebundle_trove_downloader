@@ -271,11 +271,9 @@ if do_download_games:
         download_file(url, url_data.file, log_prefix=f"{part}: ", progress_bar_prefix=f"{part} DOWNLOAD:", file_size=DOWNLOAD_CHUNK_SIZE)
         logger.success(f'{part}: Overall download progress: {human_size(downloaded_size)} ({downloaded_size}) of {human_size(DOWNLOAD_TOTAL_SIZE)} ({DOWNLOAD_TOTAL_SIZE}).')
     # end for
+    part = f"[{'':->{GAMES_COUNT_LEN}}/{'':->{GAMES_COUNT_LEN}}]"
+    logger.success(f'{part}: Done with downloading.')
 # end for
-
-
-part = f"[{'':->{GAMES_COUNT_LEN}}/{'':->{GAMES_COUNT_LEN}}]"
-logger.success(f'{part}: Done with downloading.')
 
 
 if do_download_images:
