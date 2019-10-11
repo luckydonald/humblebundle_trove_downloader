@@ -82,7 +82,7 @@ for i, game_data in enumerate(GAME_DATA):
                 ),
                 small=dl['small'],
                 md5=dl['md5'],
-                sha1=dl['sha1'],
+                sha1=dl.get('sha1'),
                 file_size=dl['file_size'],
                 human_size=dl['human_size'],
                 uploaded_at=dl['uploaded_at'],
