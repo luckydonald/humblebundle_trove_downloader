@@ -94,7 +94,7 @@ for i, game_data in enumerate(GAME_DATA):
         youtube_link=game_data['youtube-link'],
         all_access=game_data['all-access'],
         carousel_content=CarouselContent(
-            youtube_link=game_data['carousel-content']['youtube-link'],
+            youtube_link=game_data['carousel-content'].get('youtube-link', []),
             thumbnail=game_data['carousel-content']['thumbnail'],
             screenshot=game_data['carousel-content']['screenshot'],
         ),
