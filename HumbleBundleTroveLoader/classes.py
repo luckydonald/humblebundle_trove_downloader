@@ -95,11 +95,11 @@ class Download(object):
 
 class URLs(object):
     web: str
-    bittorent: str
+    bittorrent: str
 
-    def __init__(self, web, bittorent):
+    def __init__(self, web, bittorrent):
         self.web = web
-        self.bittorent = bittorent
+        self.bittorrent = bittorrent
     # end def
 
     def __iter__(self):
