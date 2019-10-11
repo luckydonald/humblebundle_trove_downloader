@@ -112,7 +112,7 @@ for i, game_data in enumerate(GAME_DATA):
                 name=dev['developer-name'],
                 url=dev.get('developer-url'),
             )
-            for dev in game_data['developers']
+            for dev in (game_data['developers'] if game_data.get('developers', None) is not None else [])
         ],
         image=game_data['image'],
         background_color=game_data['background-color'],
