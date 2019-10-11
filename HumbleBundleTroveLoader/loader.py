@@ -110,7 +110,7 @@ for i, game in enumerate(GAME_DATA):
             DOWNLOADS.append(URLData(
                 url=URL_DOWNLOADS.format(file=download),
                 auth_request=auth_request_data,
-                file=path.join(download_path, download.replace('/', ':')),
+                file=path.join(download_path, download.replace(': ', ' — ').replace(':', ' — ').replace('/', ':')),
                 type=download_type,
                 size=download_meta.get('file_size', None) if download_type == TYPE_WEB else None,  # only the actual file.
                 md5=download_meta.get('md5', None) if download_type == TYPE_WEB else None,  # only the actual file.
@@ -325,7 +325,7 @@ for game_data in GAME_DATA:
         marketing_blurb = game_data['marketing-blurb'],
     )
 
-    game_path = path.join(DOWNLOAD_DIR, game.human_name.replace(':', ' - ').replace('/', ':'))
+    game_path = path.join(DOWNLOAD_DIR, game.human_name.replace(': ', ' — ').replace(':', ' — ').replace('/', ':'))
     # noinspection PyTypeChecker
     html_path = path.join(game_path, 'index.html')
     # noinspection PyTypeChecker
