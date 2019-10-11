@@ -18,7 +18,7 @@ INCOMPLETE_BLOCK_GRAD = ['░', '▒', '▓']
 # for unknown length downloads
 ACTIVITY_MODE = ['▹', '▸']
 
-FALLBACK_SIZE = 30
+FALLBACK_SIZE = 50
 
 
 def prepare_color(name):
