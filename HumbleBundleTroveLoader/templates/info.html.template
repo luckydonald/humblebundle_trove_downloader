@@ -45,8 +45,8 @@
     <body>
         <h1>{{ game.human_name }}</h1>
         {% for dev in developers %}{% if loop.first %}<div>Developed by{% endif %}<a href="{{ dev.url }}">{{ dev.name }}</a>{% if not loop.last %}, {% else %}</div>{% endif %}{% endfor %}
-        {% if game.logo %}<img href="logo.png" />{% endif %}
-        {% if game.image %}<img href="image.png" />{% endif %}
+        {% if game.logo %}<img src="data/logo.png" />{% endif %}
+        {% if game.image %}<img src="data/image.png" />{% endif %}
         <div class="description">
             {{ game.description_text | safe }}
         </div>
