@@ -59,7 +59,10 @@
                 {% elif game.image %}<img src="{{ game.folder_data_url }}image.png" class="max_hundred" />
                 {% else %}<div class="no-img max_hundred">No image found</div>
                 {% endif %}
-                <a href="{{ game.folder_url }}"><b>{{ game.title }}</b></a><br />
+                <a href="{{ game.folder_url }}"><b>{{ game.title }}</b></a>
+                ({% for platform, download in game.downloads.items() %}<a href="{{ game.folder_url }}/{{ platform }}">{{ platform }}</a>{% if not loop.last %}, {% endif %}{% endfor %})
+                <a href="{{ game.folder_url }}/info.html"><i>More info ⋙</i></a>
+                <br />
                 <div class="images">
                 {% if game.logo %}<img src="{{ game.folder_data_url }}logo.png" class="max_hundred" />{% endif %}
                 {% if game.image %}<img src="{{ game.folder_data_url }}image.png" class="max_hundred" />{% endif %}
