@@ -14,6 +14,7 @@ if __name__ == '__main__':
     logging.add_colored_handler(level=logging.DEBUG)
 # end if
 
+
 class RelEnvironment(Environment):
     """
     Override join_path() to enable relative template paths.

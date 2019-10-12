@@ -133,7 +133,8 @@ DOWNLOAD_TOTAL_SIZE = 0
 DOWNLOADS: List[URLData] = []  # file: url
 
 for i, game in enumerate(GAMES):
-    logger.debug(f'{part}: Found Game {game.title!r} with {len(game_data["downloads"])} downloads.')
+    part = f"[{i + 1:0>{GAMES_COUNT_LEN}}/{GAMES_COUNT}]"
+    logger.debug(f'{part}: Found Game {game.title!r} with {len(game.downloads)} downloads.')
     game_path = path.join(DOWNLOAD_DIR, sanitize_name(game.title))
     mkdir_p(game_path)
     for platform, download in game.downloads.items():
