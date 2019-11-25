@@ -30,7 +30,12 @@ Copy paste the value from `_simpleauth_sess`.
 - In Safari, open the _Storage Tab_ of the [Web Inspector](https://developer.apple.com/safari/tools/) (Context menu on the page, click _Inspect page_) click the _Storage_ tab, select _Cookies_ on the sidebar, select the `_simpleauth_sess` cookie, and press <kbd>Ctrl</kbd>+<kbd>C</kbd> or <kbd>Ctrl</kbd>+<kbd>C</kbd> to copy it. It will copy the hole line, so just keep the second part of it.  There is a `safari_cookie_extractor.py` tool which you can edit to aid you in the that process.   
 Do not share your private data with anyone!
 
-
+## Put that into the settings file
+Copy over the settings example file `settings.example.py` over to `settings.py`.
+Set the folder for the download there.
+Also set the `_simpleauth_sess` part we extracted previously. 
+ 
+  
 
 ## Downloading missing games
 
