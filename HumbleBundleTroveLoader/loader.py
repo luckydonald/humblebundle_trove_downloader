@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 from typing import List
 from classes import URLData, CarouselContent, Game, Developer, Download, URLs, Publisher
 from settings import DOWNLOAD_DIR, COOKIE_JAR
-from constants import URL_TROVE, URL_DL_SIGN, URL_DOWNLOADS, URL_INFO_CHUNKS, TYPE_WEB
+from constants import URL_TROVE, URL_DL_SIGN, URL_DOWNLOADS, URL_INFO_CHUNKS, TYPE_WEB, URL_TROVE_API
 from constants import TYPE_BITTORRENT, DOWNLOAD_URL_TYPE_TO_SIGNATURE_TYPE_MAP, HASH_CHUNK_SIZE, DOWNLOAD_CHUNK_SIZE
 from utils.save import download_file, sanitize_name
 from utils.file_size import human_size
@@ -22,11 +22,12 @@ from luckydonaldUtils.files.basics import mkdir_p
 logger = logging.getLogger(__name__)
 logging.add_colored_handler(level=logging.DEBUG)
 
-
+#
 do_download_images = True
 do_download_games = True
 do_generate_html = True
-do_check_hashes = True
+do_check_hashes = False
+#
 
 # now we can start.
 
@@ -37,6 +38,11 @@ response = requests.request(
     url=URL_TROVE,
     cookies=COOKIE_JAR
 )
+trove_data = requests.request(
+    method='GET',
+    url=URL_TROVE_API,
+    cookies=COOKIE_JAR,
+)
 
 # parse page
 soup = BeautifulSoup(response.content, features="html.parser")
@@ -46,8 +52,8 @@ trove_data = json.loads(json_script_tag_trove_data_string)
 
 CHUNKS_COUNT = trove_data['chunks']
 GAME_DATA = []
-GAME_DATA.extend(trove_data['standardProducts'])
 GAME_DATA.extend(trove_data['newlyAdded'])
+GAME_DATA.extend(trove_data.json())
 
 logger.info(f"We have {CHUNKS_COUNT} pages of {trove_data['gamesPerChunk']} games each to load.")
 for chunk in range(CHUNKS_COUNT + 1):

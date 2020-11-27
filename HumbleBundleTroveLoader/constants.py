@@ -11,6 +11,7 @@ if __name__ == '__main__':
 
 URL_TROVE = "https://www.humblebundle.com/monthly/trove"
 URL_DL_SIGN = "https://www.humblebundle.com/api/v1/user/download/sign"
+URL_TROVE_API = "https://www.humblebundle.com/api/v1/trove/chunk?property=popularity&direction=desc&index=0"
 URL_DOWNLOADS = "https://dl.humble.com/{file}"
 URL_INFO_CHUNKS = "https://www.humblebundle.com/api/v1/trove/chunk?index={chunk}"
 
