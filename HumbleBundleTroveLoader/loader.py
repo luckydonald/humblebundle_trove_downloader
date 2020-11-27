@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 from typing import List
 from classes import URLData, CarouselContent, Game, Developer, Download, URLs, Publisher
 from settings import DOWNLOAD_DIR, COOKIE_JAR
-from constants import URL_TROVE, URL_DL_SIGN, URL_DOWNLOADS, URL_INFO_CHUNKS, TYPE_WEB, URL_TROVE_API
+from constants import URL_TROVE, URL_DL_SIGN, URL_DOWNLOADS, URL_INFO_CHUNKS, TYPE_WEB
 from constants import TYPE_BITTORRENT, DOWNLOAD_URL_TYPE_TO_SIGNATURE_TYPE_MAP, HASH_CHUNK_SIZE, DOWNLOAD_CHUNK_SIZE
 from utils.save import download_file, sanitize_name
 from utils.file_size import human_size
@@ -38,12 +38,6 @@ response = requests.request(
     url=URL_TROVE,
     cookies=COOKIE_JAR
 )
-trove_data = requests.request(
-    method='GET',
-    url=URL_TROVE_API,
-    cookies=COOKIE_JAR,
-)
-
 # parse page
 soup = BeautifulSoup(response.content, features="html.parser")
 json_script_tag_trove_data_element = soup.find('script', id='webpack-monthly-trove-data')
@@ -53,14 +47,13 @@ trove_data = json.loads(json_script_tag_trove_data_string)
 CHUNKS_COUNT = trove_data['chunks']
 GAME_DATA = []
 GAME_DATA.extend(trove_data['newlyAdded'])
-GAME_DATA.extend(trove_data.json())
 
-logger.info(f"We have {CHUNKS_COUNT} pages of {trove_data['gamesPerChunk']} games each to load.")
+logger.info(f"We have {CHUNKS_COUNT} pages of `n` games each to load.")
 for chunk in range(CHUNKS_COUNT + 1):
     logger.debug(f"Requesting data of page {chunk + 1} of {CHUNKS_COUNT}.")
     response = requests.request(
         method='GET',
-        url=URL_INFO_CHUNKS.format(chunk=chunk),
+        url=URL_INFO_CHUNKS.format(chunk=chunk),  # https://www.humblebundle.com/api/v1/trove/chunk?property=start&direction=desc&index={chunk}
         cookies=COOKIE_JAR
     )
     chunk_data = response.json()
