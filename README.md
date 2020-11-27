@@ -1,4 +1,4 @@
-# Humble Bundle Trove Loader
+# Humble Bundle Trove Downloader
 
 `HumbleBundleTroveLoader` is used for downloading and making a complete back-up of your entire Humble Bundle Trove library.
 It will download all platforms and group them together in folders based on the names of the game.
